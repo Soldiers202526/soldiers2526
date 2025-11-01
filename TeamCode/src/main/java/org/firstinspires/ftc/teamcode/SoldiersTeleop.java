@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name="SoldiersTeleop", group="Drive")
+@TeleOp(name = "SoldiersTeleop", group = "Drive")
 public class SoldiersTeleop extends LinearOpMode {
 
     // Declare motors
@@ -13,6 +13,13 @@ public class SoldiersTeleop extends LinearOpMode {
     private DcMotor frontRight = null;
     private DcMotor backRight = null;
 
+    private DcMotor intake = null;
+    private DcMotor sorter = null;
+
+    private DcMotor leftShoot = null;
+    private DcMotor rightShoot = null;
+
+
     @Override
     public void runOpMode() {
         // Initialize the hardware variables. The names must match your configuration file
@@ -20,6 +27,11 @@ public class SoldiersTeleop extends LinearOpMode {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        sorter = hardwareMap.get(DcMotor.class, "sorter");
+        leftShoot = hardwareMap.get(DcMotor.class, "leftShoot");
+        rightShoot = hardwareMap.get(DcMotor.class, "rightShoot");
+
 
         // Reverse the right side motors. Adjust if needed based on your robot’s setup
         //frontRight.setDirection(DcMotor.Direction.REVERSE);
@@ -29,6 +41,10 @@ public class SoldiersTeleop extends LinearOpMode {
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        // init intake state machine
+        int intake_state = 0;
+        long intake_time = System.currentTimeMillis();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -62,6 +78,45 @@ public class SoldiersTeleop extends LinearOpMode {
             backRight.setPower(backRightPower);
 
             // Telemetry for debugging
+            if (intake_state == 0) {
+                // action
+                intake.setPower(0);
+
+                // transition
+                if (gamepad2.a) {
+                    intake_state = 1;
+                    intake_time = System.currentTimeMillis();
+                }
+
+                telemetry.addData("intake_state = ", intake_state);
+
+            } else if (intake_state == 1) {
+                if (System.currentTimeMillis() - intake_time > 500) {
+                    intake_state = 2;
+                }
+
+                telemetry.addData("intake_state = ", intake_state);
+            } else if (intake_state == 2) {
+                // action
+                intake.setPower(-0.1);
+
+                if (gamepad2.a) {
+                    intake_state = 3;
+                    intake_time = System.currentTimeMillis();
+                }
+
+                telemetry.addData("intake_state = ", intake_state);
+            } else if (intake_state == 3) {
+                if (System.currentTimeMillis() - intake_time > 200) {
+                    intake_state = 0;
+                }
+
+                telemetry.addData("intake_state = ", intake_state);
+            } else {
+                telemetry.addData("Invalid Intake State", intake_state);
+            }
+
+
             telemetry.addData("Front Left", frontLeftPower);
             telemetry.addData("Back Left", backLeftPower);
             telemetry.addData("Front Right", frontRightPower);
