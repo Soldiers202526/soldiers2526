@@ -44,7 +44,6 @@ public class SoldiersTeleop extends LinearOpMode {
 
         // init intake state machine
         int intake_state = 0;
-        long intake_time = System.currentTimeMillis();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -85,34 +84,26 @@ public class SoldiersTeleop extends LinearOpMode {
                 // transition
                 if (gamepad2.a) {
                     intake_state = 1;
-                    intake_time = System.currentTimeMillis();
                 }
-
-                telemetry.addData("intake_state = ", intake_state);
-
             } else if (intake_state == 1) {
-                if (System.currentTimeMillis() - intake_time > 500) {
+                if (!gamepad2.a) {
                     intake_state = 2;
                 }
-
-                telemetry.addData("intake_state = ", intake_state);
-            } else if (intake_state == 2) {
+            }
+            else if (intake_state == 2) {
                 // action
-                intake.setPower(-0.1);
+                intake.setPower(-0.35);
 
                 if (gamepad2.a) {
                     intake_state = 3;
-                    intake_time = System.currentTimeMillis();
                 }
-
-                telemetry.addData("intake_state = ", intake_state);
-            } else if (intake_state == 3) {
-                if (System.currentTimeMillis() - intake_time > 200) {
+            }
+            else if (intake_state == 3) {
+                if (!gamepad2.a) {
                     intake_state = 0;
                 }
-
-                telemetry.addData("intake_state = ", intake_state);
-            } else {
+            }
+            else {
                 telemetry.addData("Invalid Intake State", intake_state);
             }
 
