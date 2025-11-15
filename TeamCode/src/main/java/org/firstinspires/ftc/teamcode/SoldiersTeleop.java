@@ -12,8 +12,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 // internal imports
 
 
-
-
 @TeleOp(name = "SoldiersTeleop", group = "Drive")
 public class SoldiersTeleop extends LinearOpMode {
 
@@ -40,9 +38,6 @@ public class SoldiersTeleop extends LinearOpMode {
 //    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS;
 
 
-
-
-
     @Override
     public void runOpMode() {
         // Initialize the hardware variables. The names must match your configuration file
@@ -58,7 +53,6 @@ public class SoldiersTeleop extends LinearOpMode {
         tiltAdjust = hardwareMap.get(Servo.class, "tiltAdjust");
 
 
-
         // Reverse the right side motors. Adjust if needed based on your robot’s setup
         //frontRight.setDirection(DcMotor.Direction.REVERSE);
         //backRight.setDirection(DcMotor.Direction.REVERSE);
@@ -69,7 +63,6 @@ public class SoldiersTeleop extends LinearOpMode {
         leftShoot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftShoot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightShoot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
 
 
         telemetry.addData("Status", "Initialized");
@@ -84,7 +77,6 @@ public class SoldiersTeleop extends LinearOpMode {
         tiltAdjust.setPosition(1);
 
 
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
@@ -94,7 +86,6 @@ public class SoldiersTeleop extends LinearOpMode {
             servoPosition += -gamepad2.left_stick_y * SERVO_SPEED;
             servoPosition = Range.clip(servoPosition, 0.0, 1.0);
             tiltAdjust.setPosition(servoPosition);
-
 
 
             int leftShootCurrentPosition = leftShoot.getCurrentPosition();
@@ -127,11 +118,8 @@ public class SoldiersTeleop extends LinearOpMode {
             backRight.setPower(backRightPower);
 
 
-
-
-
             // Calculate motor powers
-             if (max > 1.0) {
+            if (max > 1.0) {
                 frontLeftPower /= max;
                 backLeftPower /= max;
                 frontRightPower /= max;
@@ -142,7 +130,7 @@ public class SoldiersTeleop extends LinearOpMode {
 
             // Telemetry for debugging
 
-           //intake code
+            //intake code
             if (intake_state == 0) {
                 // action
                 intake.setPower(0);
@@ -150,14 +138,15 @@ public class SoldiersTeleop extends LinearOpMode {
                 // transition
                 if (gamepad2.a) {
                     intake_state = 1;
+                } else if (gamepad2.b) {
+                    intake_state = 4;
                 }
             } else if (intake_state == 1) {
                 //transition
                 if (!gamepad2.a) {
                     intake_state = 2;
                 }
-            }
-            else if (intake_state == 2) {
+            } else if (intake_state == 2) {
                 // action
                 intake.setPower(-0.5);
 
@@ -165,34 +154,43 @@ public class SoldiersTeleop extends LinearOpMode {
                 if (gamepad2.a) {
                     intake_state = 3;
                 }
-            }
-            else if (intake_state == 3) {
+                else if (gamepad2.b) {
+                    intake_state = 4;
+                }
+            } else if (intake_state == 3) {
                 // transition
                 if (!gamepad2.a) {
                     intake_state = 0;
                 }
-            }
-            else {
+            } else if (intake_state == 4) {
+                if (!gamepad2.b) {
+                    intake_state = 5;
+                }
+            } else if (intake_state == 5) {
+                intake.setPower(0.5);
+
+                //transition
+                if (gamepad2.b) {
+                    intake_state = 6;
+                } else if (gamepad2.a) {
+                    intake_state = 1;
+                }
+            } else if (intake_state == 6) {
+                if (!gamepad2.b) {
+                    intake_state = 0;
+                }
+            } else {
                 telemetry.addData("Invalid Intake State", intake_state);
             }
-
-
-
-
-
 
 
 //sorter code
 
             if (gamepad2.left_bumper || gamepad2.left_trigger > 0.5) {
                 sorter.setPower(0.2);
-            }
-
-            else if (gamepad2.right_bumper || gamepad2.right_trigger > 0.5) {
+            } else if (gamepad2.right_bumper || gamepad2.right_trigger > 0.5) {
                 sorter.setPower(-0.2);
-            }
-
-            else {
+            } else {
                 sorter.setPower(0);
             }
 
@@ -213,7 +211,6 @@ public class SoldiersTeleop extends LinearOpMode {
             }
 
 
-
 //telemetry update
 
             telemetry.addData("Front Left", frontLeftPower);
@@ -224,8 +221,8 @@ public class SoldiersTeleop extends LinearOpMode {
             telemetry.addData("Servo Position", servoPosition);
             telemetry.addData("Joystick", gamepad2.left_stick_y);
             telemetry.addData("leftShoot", leftDeltaTicks);
-            telemetry.addData("rightShoot",rightDeltaTicks);
-          telemetry.update();
+            telemetry.addData("rightShoot", rightDeltaTicks);
+            telemetry.update();
         }
     }
 }
