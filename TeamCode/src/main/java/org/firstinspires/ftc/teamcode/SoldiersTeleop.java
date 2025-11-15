@@ -187,6 +187,7 @@ public class SoldiersTeleop extends LinearOpMode {
         double frontRightPower = y - x - rx;
         double backRightPower = y + x - rx;
 
+
         // Normalize powers if any value is greater than 1
         double max = Math.max(Math.abs(frontLeftPower), Math.max(Math.abs(backLeftPower),
                 Math.max(Math.abs(frontRightPower), Math.abs(backRightPower))));
@@ -199,6 +200,22 @@ public class SoldiersTeleop extends LinearOpMode {
             frontRightPower /= max;
             backRightPower /= max;
         }
+
+        if (gamepad1.left_trigger > 0.5) {
+            frontLeftPower *= 0.25;
+            backLeftPower *= 0.25;
+            frontRightPower *= 0.25;
+            backRightPower *= 0.25;
+        }
+
+        if (gamepad1.right_trigger > 0.5) {
+            frontLeftPower *= 0.5;
+            backLeftPower *= 0.5;
+            frontRightPower *= 0.5;
+            backRightPower *= 0.5;
+        }
+
+
 
         frontLeft.setPower(frontLeftPower);
         backLeft.setPower(backLeftPower);
