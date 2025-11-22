@@ -61,7 +61,7 @@ public class Sorter_Encoder extends LinearOpMode {
                 sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 sorter.setPower(0.25);
             }
-            if (!gamepad1.b) rightBumperPressed = false;
+            if (!gamepad1.right_bumper) rightBumperPressed = false;
 
             // When done moving, switch back safely
             if (!sorter.isBusy()) {
