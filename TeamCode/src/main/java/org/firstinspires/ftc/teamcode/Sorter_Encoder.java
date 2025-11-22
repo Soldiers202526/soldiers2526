@@ -9,7 +9,7 @@ public class Sorter_Encoder extends LinearOpMode {
 
     private static final double TICKS_PER_REV = 775.0;   // REV 25:1 HD Hex
     private static final int NUM_POSITIONS = 6;
-    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS; // ~116.7 ticks per slot
+    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -17,53 +17,57 @@ public class Sorter_Encoder extends LinearOpMode {
 
         sorter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sorter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        sorter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // A and B sequences
-        int[] aSequence = {1, 3, 5}; // positions for A
-        int[] bSequence = {2, 4, 6}; // positions for B
+        // sequences
+        int[] aSequence = {1, 3, 5};
+        int[] bSequence = {2, 4, 6};
 
-        int aIndex = 0; // tracks current position in A sequence
-        int bIndex = 0; // tracks current position in B sequence
+        int aIndex = -1; // start BEFORE first so first press goes to index 0
+        int bIndex = -1;
 
-        boolean aPressed = false;
-        boolean bPressed = false;
+        boolean leftBumperPressed = false;
+        boolean rightBumperPressed = false;
 
         waitForStart();
 
         while (opModeIsActive()) {
 
-            // --- Handle A button ---
-            if (gamepad1.a && !aPressed) {
-                aPressed = true;
+            // ----- A Button: 1 → 3 → 5 -----
+            if (gamepad1.left_bumper && !leftBumperPressed) {
+                leftBumperPressed = true;
 
-                // pick next position in A sequence
                 aIndex = (aIndex + 1) % aSequence.length;
-                int position = aSequence[aIndex];
+                int slot = aSequence[aIndex];
 
-                // calculate encoder ticks for this position
-                int targetTicks = (int)(TICKS_PER_POSITION * (position - 1)); // reverse direction
+                int targetTicks = (int)(TICKS_PER_POSITION * (slot - 1));
+
                 sorter.setTargetPosition(targetTicks);
                 sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                sorter.setPower(0.15);
+                sorter.setPower(0.25);
             }
-            if (!gamepad1.a) aPressed = false;
+            if (!gamepad1.left_bumper) leftBumperPressed = false;
 
-            // --- Handle B button ---
-            if (gamepad1.b && !bPressed) {
-                bPressed = true;
+            // ----- B Button: 2 → 4 → 6 -----
+            if (gamepad1.right_bumper && !rightBumperPressed) {
+                rightBumperPressed = true;
 
-                // pick next position in B sequence
                 bIndex = (bIndex + 1) % bSequence.length;
-                int position = bSequence[bIndex];
+                int slot = bSequence[bIndex];
 
-                // calculate encoder ticks for this position
-                int targetTicks = (int)(TICKS_PER_POSITION * (position - 1)); // reverse direction
+                int targetTicks = (int)(TICKS_PER_POSITION * (slot - 1));
+
                 sorter.setTargetPosition(targetTicks);
                 sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                sorter.setPower(0.15);
+                sorter.setPower(0.25);
             }
-            if (!gamepad1.b) bPressed = false;
+            if (!gamepad1.b) rightBumperPressed = false;
+
+            // When done moving, switch back safely
+            if (!sorter.isBusy()) {
+                sorter.setPower(0);
+                sorter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
 
             // telemetry
             telemetry.addData("Current Pos", sorter.getCurrentPosition());

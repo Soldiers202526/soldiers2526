@@ -15,24 +15,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 @TeleOp(name = "SoldiersTeleop", group = "Drive")
 public class SoldiersTeleop extends LinearOpMode {
 
-//    // Declare motors
-//    private DcMotor frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-//    private DcMotor backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-//    private DcMotor frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-//    private DcMotor backRight = hardwareMap.get(DcMotor.class, "backRight");
-//
-//    private DcMotor intake = hardwareMap.get(DcMotor.class, "intake");
-//
-//    private DcMotor sorter = hardwareMap.get(DcMotor.class, "sorter");
-//
-//    private DcMotor leftShoot = hardwareMap.get(DcMotor.class, "leftShoot");
-//    private DcMotor rightShoot = hardwareMap.get(DcMotor.class, "rightShoot");
-//
-//    private Servo bootKicker = hardwareMap.get(Servo.class, "bootkicker");
-//
-//
-//    private Servo tiltAdjust = hardwareMap.get(Servo.class, "tiltAdjust");
-
     // Declare motors
     private DcMotor frontLeft = null;
     private DcMotor backLeft = null;
@@ -41,10 +23,15 @@ public class SoldiersTeleop extends LinearOpMode {
 
     private DcMotor intake = null;
 
-    private DcMotor sorter = null;
+    private static final double TICKS_PER_REV = 775.0;   // REV 25:1 HD Hex
+    private static final int NUM_POSITIONS = 6;
+    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS;
+
 
     private DcMotor leftShoot = null;
     private DcMotor rightShoot = null;
+
+    private DcMotor sorter = null;
 
     private Servo bootKicker = null;
 
@@ -58,9 +45,9 @@ public class SoldiersTeleop extends LinearOpMode {
 //    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS;
 
 
-    private static final double TICKS_PER_REV = 775.0;   // REV 25:1 HD Hex
-    private static final int NUM_POSITIONS = 6;
-    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS; // ~116.7 ticks per slot
+//    private static final double TICKS_PER_REV = 775.0;   // REV 25:1 HD Hex
+//    private static final int NUM_POSITIONS = 6;
+//    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS; // ~116.7 ticks per slot
 
     // A and B sequences
     private int[] aSequence = {1, 3, 5}; // positions for A
@@ -69,8 +56,10 @@ public class SoldiersTeleop extends LinearOpMode {
     private int aIndex = 0; // tracks current position in A sequence
     private int bIndex = 0; // tracks current position in B sequence
 
-    private boolean aPressed = false;
-    private boolean bPressed = false;
+    boolean leftBumperPressed = false;
+    boolean rightBumperPressed = false;
+
+
 
     // initial intake state
     private int intake_state = 0;
@@ -129,38 +118,43 @@ public class SoldiersTeleop extends LinearOpMode {
         }
     }
 
+
+
     private void doSorter() {
-        // TO DO
-        if (gamepad1.a && !aPressed) {
-            aPressed = true;
+        if (gamepad1.left_bumper && !leftBumperPressed) {
+            leftBumperPressed = true;
 
-            // pick next position in A sequence
             aIndex = (aIndex + 1) % aSequence.length;
-            int position = aSequence[aIndex];
+            int slot = aSequence[aIndex];
 
-            // calculate encoder ticks for this position
-            int targetTicks = (int) (TICKS_PER_POSITION * (position - 1)); // reverse direction
+            int targetTicks = (int)(TICKS_PER_POSITION * (slot - 1));
+
             sorter.setTargetPosition(targetTicks);
             sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            sorter.setPower(0.15);
+            sorter.setPower(0.25);
         }
-        if (!gamepad1.a) aPressed = false;
+        if (!gamepad1.left_bumper) leftBumperPressed = false;
 
-        // --- Handle B button ---
-        if (gamepad1.b && !bPressed) {
-            bPressed = true;
+        // ----- B Button: 2 → 4 → 6 -----
+        if (gamepad1.right_bumper && !rightBumperPressed) {
+            rightBumperPressed = true;
 
-            // pick next position in B sequence
             bIndex = (bIndex + 1) % bSequence.length;
-            int position = bSequence[bIndex];
+            int slot = bSequence[bIndex];
 
-            // calculate encoder ticks for this position
-            int targetTicks = (int) (TICKS_PER_POSITION * (position - 1)); // reverse direction
+            int targetTicks = (int)(TICKS_PER_POSITION * (slot - 1));
+
             sorter.setTargetPosition(targetTicks);
             sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            sorter.setPower(0.15);
+            sorter.setPower(0.25);
         }
-        if (!gamepad1.b) bPressed = false;
+        if (!gamepad1.b) rightBumperPressed = false;
+
+        // When done moving, switch back safely
+        if (!sorter.isBusy()) {
+            sorter.setPower(0);
+            sorter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
 
         // telemetry
         telemetry.addData("Current Pos", sorter.getCurrentPosition());
@@ -170,8 +164,12 @@ public class SoldiersTeleop extends LinearOpMode {
         telemetry.update();
 
 
-        sorter.setPower(0);
     }
+
+
+//      sorter.setPower(0);
+
+//}
 
 
     private void doDrive() {
@@ -201,14 +199,14 @@ public class SoldiersTeleop extends LinearOpMode {
             backRightPower /= max;
         }
 
-        if (gamepad1.left_trigger > 0.5) {
+        if (gamepad2.left_trigger > 0.5) {
             frontLeftPower *= 0.25;
             backLeftPower *= 0.25;
             frontRightPower *= 0.25;
             backRightPower *= 0.25;
         }
 
-        if (gamepad1.right_trigger > 0.5) {
+        if (gamepad2.right_trigger > 0.5) {
             frontLeftPower *= 0.5;
             backLeftPower *= 0.5;
             frontRightPower *= 0.5;
@@ -231,17 +229,7 @@ public class SoldiersTeleop extends LinearOpMode {
     }
 
 
-    private void sortercode() {
 
-        if (gamepad2.left_bumper || gamepad2.left_trigger > 0.5) {
-            sorter.setPower(0.2);
-        } else if (gamepad2.right_bumper || gamepad2.right_trigger > 0.5) {
-            sorter.setPower(-0.2);
-        } else {
-            sorter.setPower(0);
-        }
-
-    }
 
 
     private void shootercode() {
@@ -283,6 +271,17 @@ public class SoldiersTeleop extends LinearOpMode {
         telemetry.addData("Servo Position", servoPosition);
     }
 
+    private void sortercode() {
+        if (gamepad2.left_trigger > 0.5) {
+            sorter.setPower(0.2);
+        } else if (gamepad2.right_trigger > 0.5) {
+            sorter.setPower(-0.2);
+        } else {
+            sorter.setPower(0);
+        }
+    }
+
+
 
     @Override
     public void runOpMode() {
@@ -293,9 +292,9 @@ public class SoldiersTeleop extends LinearOpMode {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
 
+
         intake = hardwareMap.get(DcMotor.class, "intake");
 
-        sorter = hardwareMap.get(DcMotor.class, "sorter");
 
         leftShoot = hardwareMap.get(DcMotor.class, "leftShoot");
         rightShoot = hardwareMap.get(DcMotor.class, "rightShoot");
@@ -307,8 +306,6 @@ public class SoldiersTeleop extends LinearOpMode {
 
 
         // Reverse the right side motors. Adjust if needed based on your robot’s setup
-        //frontRight.setDirection(DcMotor.Direction.REVERSE);
-        //backRight.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
@@ -328,48 +325,19 @@ public class SoldiersTeleop extends LinearOpMode {
         tiltAdjust.setPosition(1);
 
 
-//        sorter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        sorter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         while (opModeIsActive()) {
-            // Get the gamepad inputs4
-//            double stick = gamepad1.left_stick_y;
-
-
             doIntake();
-
-
-            // TO DO
-//        doSorter();
-
-
+            doSorter();
             doDrive();
-
-
             sortercode();
-
-
             shootercode();
-
-
             bootkicker();
-
-
             doservo();
 
-            //TO DO merge shoot and bootkick code
-
-
-//telemetry update
-
-
-            //telemetry.addData("Joystick", gamepad2.left_stick_y);
-//        telemetry.addData("leftShoot", leftDeltaTicks);
-//        telemetry.addData("rightShoot", rightDeltaTicks);
+            // telemetry update
             telemetry.update();
         }
     }
