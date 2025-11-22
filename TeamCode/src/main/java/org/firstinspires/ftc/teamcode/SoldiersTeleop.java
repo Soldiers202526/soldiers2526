@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImpl;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
@@ -31,7 +32,6 @@ public class SoldiersTeleop extends LinearOpMode {
 //    private Servo bootKicker = hardwareMap.get(Servo.class, "bootkicker");
 //
 //
-//    private Servo tiltAdjust = hardwareMap.get(Servo.class, "tiltAdjust");
 
     // Declare motors
     private DcMotor frontLeft = null;
@@ -48,10 +48,10 @@ public class SoldiersTeleop extends LinearOpMode {
 
     private Servo bootKicker = null;
 
-
     private Servo tiltAdjust = null;
+   // private Servo tiltAdjust = null;
     ;
-    private double servoPosition = 1; // Start halfway
+    //private double servoPosition = 1; // Start halfway
 
 //    private static final double TICKS_PER_REV = 537.7;   // Example for GoBilda 5203
 //    private static final int NUM_POSITIONS = 6;
@@ -75,6 +75,30 @@ public class SoldiersTeleop extends LinearOpMode {
     // initial intake state
     private int intake_state = 0;
 
+    private int tilt_state = 0;
+
+    private void doTilt() {
+        if (tilt_state == 0){
+            tiltAdjust.setPosition(0);
+            telemetry.addData("tiltAdjust = ", tiltAdjust.getPosition());
+            telemetry.addData("tilt_state = ", tilt_state);
+
+            if (gamepad2.dpad_up) {
+                tilt_state = 1;
+            }
+        }
+
+        else if (tilt_state == 1) {
+            tiltAdjust.setPosition(0.5);
+            telemetry.addData("tiltAdjust = ", tiltAdjust.getPosition());
+            telemetry.addData("tilt_state = ", tilt_state);
+
+            if (gamepad2.dpad_down) {
+                tilt_state = 0;
+            }
+        }
+
+    }
 
     private void doIntake() {
         if (intake_state == 0) {
@@ -272,16 +296,7 @@ public class SoldiersTeleop extends LinearOpMode {
 
     }
 
-    private void doservo() {
 
-        // How fast it moves per loop
-        double SERVO_SPEED = 0.0003;
-        servoPosition += -gamepad2.left_stick_y * SERVO_SPEED;
-        servoPosition = Range.clip(servoPosition, 0.0, 1.0);
-        tiltAdjust.setPosition(servoPosition);
-        telemetry.addData("tiltAdjust", tiltAdjust.getDirection());
-        telemetry.addData("Servo Position", servoPosition);
-    }
 
 
     @Override
@@ -302,8 +317,9 @@ public class SoldiersTeleop extends LinearOpMode {
 
         bootKicker = hardwareMap.get(Servo.class, "bootkicker");
 
-
         tiltAdjust = hardwareMap.get(Servo.class, "tiltAdjust");
+
+
 
 
         // Reverse the right side motors. Adjust if needed based on your robot’s setup
@@ -325,7 +341,6 @@ public class SoldiersTeleop extends LinearOpMode {
 //    int rightShootLastPosition = rightShoot.getCurrentPosition();
 
         bootKicker.setPosition(.98);
-        tiltAdjust.setPosition(1);
 
 
 //        sorter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -358,8 +373,9 @@ public class SoldiersTeleop extends LinearOpMode {
 
             bootkicker();
 
+            doTilt();
 
-            doservo();
+            //doservo();
 
             //TO DO merge shoot and bootkick code
 
