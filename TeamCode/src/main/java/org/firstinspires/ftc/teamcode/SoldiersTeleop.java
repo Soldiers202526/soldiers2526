@@ -49,8 +49,6 @@ public class SoldiersTeleop extends LinearOpMode {
     private Servo bootKicker = null;
 
     private Servo tiltAdjust = null;
-   // private Servo tiltAdjust = null;
-    ;
     //private double servoPosition = 1; // Start halfway
 
 //    private static final double TICKS_PER_REV = 537.7;   // Example for GoBilda 5203
@@ -78,10 +76,8 @@ public class SoldiersTeleop extends LinearOpMode {
     private int tilt_state = 0;
 
     private void doTilt() {
-        if (tilt_state == 0){
+        if (tilt_state == 0) {
             tiltAdjust.setPosition(0);
-            telemetry.addData("tiltAdjust = ", tiltAdjust.getPosition());
-            telemetry.addData("tilt_state = ", tilt_state);
 
             if (gamepad2.dpad_up) {
                 tilt_state = 1;
@@ -89,14 +85,19 @@ public class SoldiersTeleop extends LinearOpMode {
         }
 
         else if (tilt_state == 1) {
-            tiltAdjust.setPosition(0.5);
-            telemetry.addData("tiltAdjust = ", tiltAdjust.getPosition());
-            telemetry.addData("tilt_state = ", tilt_state);
+            tiltAdjust.setPosition(1.0);
 
             if (gamepad2.dpad_down) {
                 tilt_state = 0;
             }
         }
+
+        else {
+            telemetry.addLine("ERROR: unknown tilt adjust state");
+        }
+
+        telemetry.addData("tiltAdjust = ", tiltAdjust.getPosition());
+        telemetry.addData("tilt_state = ", tilt_state);
 
     }
 
@@ -319,6 +320,9 @@ public class SoldiersTeleop extends LinearOpMode {
 
         tiltAdjust = hardwareMap.get(Servo.class, "tiltAdjust");
 
+        // TODO: how to do this?
+//        tiltAdjust.setPwmRange(new ServoPwmRange(600, 2400));
+
 
 
 
@@ -341,6 +345,8 @@ public class SoldiersTeleop extends LinearOpMode {
 //    int rightShootLastPosition = rightShoot.getCurrentPosition();
 
         bootKicker.setPosition(.98);
+
+        tiltAdjust.setPosition(1.0);
 
 
 //        sorter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
