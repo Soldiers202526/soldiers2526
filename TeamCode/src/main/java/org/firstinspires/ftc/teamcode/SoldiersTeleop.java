@@ -161,10 +161,10 @@ public class SoldiersTeleop extends LinearOpMode {
 
             // pick next position in A sequence
             aIndex = (aIndex + 1) % aSequence.length;
-            int position = aSequence[aIndex];
+            int aPosition = aSequence[aIndex];
 
             // calculate encoder ticks for this position
-            int targetTicks = (int) (TICKS_PER_POSITION * (position - 1)); // reverse direction
+            int targetTicks = (int) (TICKS_PER_POSITION * (aPosition - 1)); // reverse direction
             sorter.setTargetPosition(targetTicks);
             sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             sorter.setPower(0.15);
@@ -177,10 +177,10 @@ public class SoldiersTeleop extends LinearOpMode {
 
             // pick next position in B sequence
             bIndex = (bIndex + 1) % bSequence.length;
-            int position = bSequence[bIndex];
+            int bPosition = bSequence[bIndex];
 
             // calculate encoder ticks for this position
-            int targetTicks = (int) (TICKS_PER_POSITION * (position - 1)); // reverse direction
+            int targetTicks = (int) (TICKS_PER_POSITION * (bPosition - 1)); // reverse direction
             sorter.setTargetPosition(targetTicks);
             sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             sorter.setPower(0.15);
@@ -365,13 +365,13 @@ public class SoldiersTeleop extends LinearOpMode {
 
 
             // TO DO
-//        doSorter();
+        doSorter();
 
 
             doDrive();
 
 
-            sortercode();
+           // sortercode();
 
 
             shootercode();
