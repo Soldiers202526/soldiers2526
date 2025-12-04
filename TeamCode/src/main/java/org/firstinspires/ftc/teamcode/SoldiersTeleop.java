@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImpl;
@@ -43,8 +44,8 @@ public class SoldiersTeleop extends LinearOpMode {
 
     private DcMotor sorter = null;
 
-    private DcMotor leftShoot = null;
-    private DcMotor rightShoot = null;
+    private DcMotorEx leftShoot = null;
+    private DcMotorEx rightShoot = null;
 
     private Servo bootKicker = null;
 
@@ -273,6 +274,14 @@ public class SoldiersTeleop extends LinearOpMode {
 
 
         double shoot = gamepad2.right_stick_y;
+        if (gamepad2.y) {
+            leftShoot.setVelocity(1000);
+            rightShoot.setVelocity(1000);
+        }
+        else if (!gamepad2.y){
+            leftShoot.setVelocity(0);
+            rightShoot.setVelocity(0);
+        }
 
         leftShoot.setPower(-shoot);
         rightShoot.setPower(-shoot);
@@ -365,13 +374,13 @@ public class SoldiersTeleop extends LinearOpMode {
 
 
             // TO DO
-        doSorter();
+        //doSorter();
 
 
             doDrive();
 
 
-           // sortercode();
+            sortercode();
 
 
             shootercode();
