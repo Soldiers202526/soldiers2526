@@ -271,20 +271,20 @@ public class SoldiersTeleop extends LinearOpMode {
 
 
     private void shootercode() {
-
-
-        double shoot = gamepad2.right_stick_y;
+//
+//
+//        double shoot = gamepad2.right_stick_y;
         if (gamepad2.y) {
-            leftShoot.setVelocity(1000);
-            rightShoot.setVelocity(1000);
+            leftShoot.setPower(0.36);
+            rightShoot.setPower(0.36);
         }
         else if (!gamepad2.y){
-            leftShoot.setVelocity(0);
-            rightShoot.setVelocity(0);
+            leftShoot.setPower(0);
+            rightShoot.setPower(0);
         }
 
-        leftShoot.setPower(-shoot);
-        rightShoot.setPower(-shoot);
+//        leftShoot.setPower(-shoot);
+//        rightShoot.setPower(-shoot);
 
 //    int leftShootCurrentPosition = leftShoot.getCurrentPosition();
 //    int rightShootCurrentPosition = rightShoot.getCurrentPosition();
@@ -322,8 +322,8 @@ public class SoldiersTeleop extends LinearOpMode {
 
         sorter = hardwareMap.get(DcMotor.class, "sorter");
 
-        leftShoot = hardwareMap.get(DcMotor.class, "leftShoot");
-        rightShoot = hardwareMap.get(DcMotor.class, "rightShoot");
+        leftShoot = hardwareMap.get(DcMotorEx.class, "leftShoot");
+        rightShoot = hardwareMap.get(DcMotorEx.class, "rightShoot");
 
         bootKicker = hardwareMap.get(Servo.class, "bootkicker");
 
@@ -341,10 +341,10 @@ public class SoldiersTeleop extends LinearOpMode {
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         leftShoot.setDirection(DcMotor.Direction.REVERSE);
-        rightShoot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftShoot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftShoot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightShoot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightShoot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftShoot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftShoot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightShoot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         telemetry.addData("Status", "Initialized");
