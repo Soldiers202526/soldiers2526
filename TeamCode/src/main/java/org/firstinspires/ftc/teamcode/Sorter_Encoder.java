@@ -4,15 +4,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "Sorter A135_B246 Fixed", group = "Testing")
+@TeleOp(name = "Sorter A135_B246 Forward Only", group = "Testing")
 public class Sorter_Encoder extends LinearOpMode {
 
-    private static final double TICKS_PER_REV = 775.0;   // REV 25:1 HD Hex
+    private static final double TICKS_PER_REV = 765.0;   // REV 25:1 HD Hex
     private static final int NUM_POSITIONS = 6;
-    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS; // ~116.7 ticks per slot
+    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         DcMotor sorter = hardwareMap.get(DcMotor.class, "sorter");
 
         sorter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -20,12 +21,11 @@ public class Sorter_Encoder extends LinearOpMode {
         sorter.setTargetPosition(0);
         sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        // A and B sequences
-        int[] aSequence = {1, 3, 5}; // positions for A
-        int[] bSequence = {2, 4, 6}; // positions for B
+        int[] aSequence = {1, 3, 5};
+        int[] bSequence = {2, 4, 6};
 
-        int aIndex = 0; // tracks current position in A sequence
-        int bIndex = 0; // tracks current position in B sequence
+        int aIndex = 0;
+        int bIndex = 0;
 
         boolean aPressed = false;
         boolean bPressed = false;
@@ -34,46 +34,51 @@ public class Sorter_Encoder extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            // --- Handle A button ---
+            // ---------- A BUTTON ----------
             if (gamepad1.a && !aPressed) {
                 aPressed = true;
 
-                // pick next position in A sequence
+                int position = aSequence[aIndex];
                 aIndex = (aIndex + 1) % aSequence.length;
-                int aPosition = aSequence[aIndex];
 
+                int targetTicks = (int)(TICKS_PER_POSITION * (position - 1));
 
+                // FORCE target forward only
+                while (targetTicks <= sorter.getCurrentPosition()) {
+                    targetTicks += TICKS_PER_REV;
+                }
 
-
-                // calculate encoder ticks for this position
-                int targetTicks = (int)(TICKS_PER_POSITION * (aPosition - 1)); // reverse direction
                 sorter.setTargetPosition(targetTicks);
-                sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                sorter.setPower(0.15);
+                sorter.setPower(1);
             }
             if (!gamepad1.a) aPressed = false;
 
-            // --- Handle B button ---
+            // ---------- B BUTTON ----------
             if (gamepad1.b && !bPressed) {
                 bPressed = true;
 
-                // pick next position in B sequence
+                int position = bSequence[bIndex];
                 bIndex = (bIndex + 1) % bSequence.length;
-                int bPosition = bSequence[bIndex];
 
-                // calculate encoder ticks for this position
-                int targetTicks = (int)(TICKS_PER_POSITION * (bPosition - 1)); // reverse direction
+                int targetTicks = (int)(TICKS_PER_POSITION * (position - 1));
+
+                // FORCE target forward only
+                while (targetTicks <= sorter.getCurrentPosition()) {
+                    targetTicks += TICKS_PER_REV;
+                }
+
                 sorter.setTargetPosition(targetTicks);
-                sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                sorter.setPower(0.15);
+                sorter.setPower(1);
             }
             if (!gamepad1.b) bPressed = false;
 
-            // telemetry
-            telemetry.addData("Current Pos", sorter.getCurrentPosition());
-            telemetry.addData("Target Pos", sorter.getTargetPosition());
-            telemetry.addData("A index", aIndex);
-            telemetry.addData("B index", bIndex);
+            // Stop motor when done
+            if (!sorter.isBusy()) {
+                sorter.setPower(0);
+            }
+
+            telemetry.addData("Current", sorter.getCurrentPosition());
+            telemetry.addData("Target", sorter.getTargetPosition());
             telemetry.update();
         }
 
