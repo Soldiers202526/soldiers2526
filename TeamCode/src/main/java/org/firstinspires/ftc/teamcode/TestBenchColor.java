@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -48,12 +49,14 @@ public class TestBenchColor {
         nothing = 0.0084, 0.0138, 0.0107
         */
 
-        if (normRed <.008 && normGreen < 0.01 && normBlue > 0.008) {
+
+        if(normRed >.0055 && normGreen < 0.01 && normBlue > 0.008) {
             telemetry.addLine("Purple");
             return DetectedColor.PURPLE;
         }
 
-        else if (normRed <.005 && normGreen < 0.015 && normBlue < 0.01) {
+
+        else if (normRed <.0065 && normGreen > 0.01 && normBlue < 0.012) {
             telemetry.addLine("Green");
             return DetectedColor.GREEN;
      }

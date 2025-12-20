@@ -17,6 +17,9 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 @TeleOp(name = "SoldiersTeleop", group = "Drive")
 public class SoldiersTeleop extends LinearOpMode {
 
+
+    TestBenchColor bench = new TestBenchColor();
+
 //    // Declare motors
 //    private DcMotor frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
 //    private DcMotor backLeft = hardwareMap.get(DcMotor.class, "backLeft");
@@ -66,8 +69,8 @@ public class SoldiersTeleop extends LinearOpMode {
 
 
     // A and B sequences
-    private int[] aSequence = {1, 3, 5}; // positions for A
-    private int[] bSequence = {2, 4, 6}; // positions for B
+    private final int[] aSequence = {1, 3, 5}; // positions for A
+    private final int[] bSequence = {2, 4, 6}; // positions for B
 
     private int aIndex = 0; // tracks current position in A sequence
     private int bIndex = 0; // tracks current position in B sequence
@@ -155,6 +158,25 @@ public class SoldiersTeleop extends LinearOpMode {
         }
     }
 
+
+
+     private void autoSort() {
+         //aPressed = true;
+
+         int position = aSequence[aIndex];
+         aIndex = (aIndex + 1) % aSequence.length;
+
+         int targetTicks = (int)(TICKS_PER_POSITION * (position - 1));
+
+         // FORCE target forward only
+         while (targetTicks <= sorter.getCurrentPosition()) {
+             targetTicks += (int) TICKS_PER_REV;
+         }
+
+         sorter.setTargetPosition(targetTicks);
+         sorter.setPower(1);
+         sleep(1000);
+     }
     private void doSorter() {
         // TO DO
         if (gamepad1.a && !aPressed) {
@@ -174,6 +196,8 @@ public class SoldiersTeleop extends LinearOpMode {
             sorter.setPower(1);
         }
         if (!gamepad1.a) aPressed = false;
+
+
 
         // ---------- B BUTTON ----------
         if (gamepad1.b && !bPressed) {
@@ -201,8 +225,28 @@ public class SoldiersTeleop extends LinearOpMode {
 
         telemetry.addData("Current", sorter.getCurrentPosition());
         telemetry.addData("Target", sorter.getTargetPosition());
-        telemetry.update();
+   }
+
+
+
+   private void ppg (){
+
+       autoshoot();
+        purple_shoot();
+        sleep(200);
+        purple_shoot();
+        sleep(200);
+        green_shoot();
+        sleep(200);
+        leftShoot.setPower(0);
+        rightShoot.setPower(0);
+
+
+
     }
+
+
+
 
 
     private void doDrive() {
@@ -275,31 +319,49 @@ public class SoldiersTeleop extends LinearOpMode {
     }
 
 
+
+private void autoshoot() {
+//
+
+
+        leftShoot.setPower(0.38);
+        rightShoot.setPower(0.38);
+
+        sleep(3000);
+
+
+    }
+
+    private void launch() {
+        bootKicker.setPosition(0.75);
+        sleep(500);
+        bootKicker.setPosition(.98);
+
+        sleep(200);
+    }
+
     private void shootercode() {
 //
 //
 //        double shoot = gamepad2.right_stick_y;
         if (gamepad2.yWasPressed()) {
-                leftShoot.setPower(1);
-                rightShoot.setPower(1);
-                sleep(250);
-
-
-                leftShoot.setPower(0.36);
-                rightShoot.setPower(0.36);
-
-                sleep(3000);
-
-                bootKicker.setPosition(0.75);
-                sleep(500);
-                bootKicker.setPosition(.98);
+               autoshoot();
 
         }
-        else if (gamepad2.yWasReleased()){
 
-            leftShoot.setPower(0);
-            rightShoot.setPower(0);
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //        leftShoot.setPower(-shoot);
 //        rightShoot.setPower(-shoot);
@@ -324,10 +386,78 @@ public class SoldiersTeleop extends LinearOpMode {
 
     }
 
+    public void green_shoot()
+    {
+
+
+
+        TestBenchColor.DetectedColor color = bench.getDetectedColor(telemetry);
+        if (color == TestBenchColor.DetectedColor.GREEN)
+        {
+            launch();
+
+        }
+        else {
+            autoSort();
+
+            color = bench.getDetectedColor(telemetry);
+            if (color == TestBenchColor.DetectedColor.GREEN)
+            {
+                launch();
+            }
+            else {
+                autoSort();
+                color = bench.getDetectedColor(telemetry);
+                if (color == TestBenchColor.DetectedColor.GREEN)
+                {
+                    launch();
+                }
+
+                else {
+//                    leftShoot.setPower(0);
+//                    rightShoot.setPower(0);
+                }
+
+            }
+        }
+
+        // calls
+    }
+
+    public void purple_shoot() {
+
+
+        TestBenchColor.DetectedColor color = bench.getDetectedColor(telemetry);
+
+        if (color == TestBenchColor.DetectedColor.PURPLE) {
+            launch();
+
+        } else {
+            autoSort();
+
+            color = bench.getDetectedColor(telemetry);
+            if (color == TestBenchColor.DetectedColor.PURPLE) {
+                launch();
+            } else {
+                autoSort();
+                color = bench.getDetectedColor(telemetry);
+                if (color == TestBenchColor.DetectedColor.PURPLE) {
+                    launch();
+                } else {
+//                    leftShoot.setPower(0);
+//                    rightShoot.setPower(0);
+                }
+
+            }
+        }
+    }
 
 
 
     @Override
+
+
+
     public void runOpMode() {
         // Initialize the hardware variables. The names must match your configuration file
         // Declare motors
@@ -339,6 +469,9 @@ public class SoldiersTeleop extends LinearOpMode {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+            bench.init(hardwareMap);
 
         intake = hardwareMap.get(DcMotor.class, "intake");
 
@@ -402,11 +535,12 @@ public class SoldiersTeleop extends LinearOpMode {
             doIntake();
 
 
-            // TO DO
-        doSorter();
+            // TODO
+       // doSorter();
 
             doDrive();
 
+            bench.getDetectedColor(telemetry);
 
             //sortercode();
 
@@ -414,9 +548,19 @@ public class SoldiersTeleop extends LinearOpMode {
             shootercode();
 
 
+            if (gamepad1.aWasPressed()) {
+                ppg();
+            }
+
+//            if (gamepad1.bWasPressed()) {
+//                purple_shoot();
+//            }
+
             bootkicker();
 
             doTilt();
+
+
 
             //doservo();
 
@@ -432,5 +576,13 @@ public class SoldiersTeleop extends LinearOpMode {
             telemetry.update();
         }
         sorter.setPower(0);
+
+
+
+
+
+
+
+
     }
 }

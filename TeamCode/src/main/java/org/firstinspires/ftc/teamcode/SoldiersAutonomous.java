@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 // internal imports
 
 
-@TeleOp(name = "SoldiersAutonomous", group = "Drive")
+@Autonomous(name = "SoldiersAutonomous", group = "Drive")
 public class SoldiersAutonomous extends LinearOpMode {
 
 //    // Declare motors
@@ -52,13 +53,13 @@ public class SoldiersAutonomous extends LinearOpMode {
 //    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS;
 
 
-    private static final double TICKS_PER_REV = 775.0;   // REV 25:1 HD Hex
+    private static final double TICKS_PER_REV = 665;   // REV 25:1 HD Hex
     private static final int NUM_POSITIONS = 6;
     private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS; // ~116.7 ticks per slot
 
     // A and B sequences
-    private int[] aSequence = {1, 3, 5}; // positions for A
-    private int[] bSequence = {2, 4, 6}; // positions for B
+    private final int[] aSequence = {1, 3, 5}; // positions for A
+    private final int[] bSequence = {2, 4, 6}; // positions for B
 
     private int aIndex = 0; // tracks current position in A sequence
     private int bIndex = 0; // tracks current position in B sequence
