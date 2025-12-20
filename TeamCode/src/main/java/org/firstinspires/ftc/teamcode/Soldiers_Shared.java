@@ -2,15 +2,15 @@
 //Import Libraries
 
 package org.firstinspires.ftc.teamcode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class Soldiers_Shared {
-    public volatile com.qualcomm.robotcore.hardware.HardwareMap hardwareMap;
-    Telemetry telemetry;
+public abstract class Soldiers_Shared extends LinearOpMode {
 
 
     TestBenchColor bench = new TestBenchColor();
@@ -53,47 +53,45 @@ public class Soldiers_Shared {
 
     //Constructor
 
-    public Soldiers_Shared(Telemetry telemetry_in) {
-        telemetry = telemetry_in;
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
+    public void init(HardwareMap hw_map) {
+        frontLeft = hw_map.get(DcMotor.class, "frontLeft");
+        backLeft = hw_map.get(DcMotor.class, "backLeft");
+        frontRight = hw_map.get(DcMotor.class, "frontRight");
+        backRight = hw_map.get(DcMotor.class, "backRight");
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        //backRight.setDirection(DcMotor.Direction.REVERSE);
 
+        bench.init(hw_map);
 
-        bench.init(hardwareMap);
+        intake = hw_map.get(DcMotor.class, "intake");
 
-        intake = hardwareMap.get(DcMotor.class, "intake");
-
-        sorter = hardwareMap.get(DcMotor.class, "sorter");
+        sorter = hw_map.get(DcMotor.class, "sorter");
         sorter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sorter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         sorter.setTargetPosition(0);
         sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftShoot = hardwareMap.get(DcMotorEx.class, "leftShoot");
-        rightShoot = hardwareMap.get(DcMotorEx.class, "rightShoot");
+        leftShoot = hw_map.get(DcMotorEx.class, "leftShoot");
+        rightShoot = hw_map.get(DcMotorEx.class, "rightShoot");
         leftShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        bootKicker = hardwareMap.get(Servo.class, "bootkicker");
 
-        tiltAdjust = hardwareMap.get(Servo.class, "tiltAdjust");
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
-        //backRight.setDirection(DcMotor.Direction.REVERSE);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        leftShoot.setDirection(DcMotor.Direction.REVERSE);
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        bootKicker = hw_map.get(Servo.class, "bootkicker");
         bootKicker.setPosition(.98);
 
+        tiltAdjust = hw_map.get(Servo.class, "tiltAdjust");
         tiltAdjust.setPosition(1.0);
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
     }
 
 
@@ -145,16 +143,6 @@ public class Soldiers_Shared {
         telemetry.addData("Front Right", frontRightPower);
         telemetry.addData("Back Right", backRightPower);
 
-    }
-
-
-    //Sleep Code
-    public void sleep (long time) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     //Intake State Machine
@@ -233,8 +221,8 @@ public class Soldiers_Shared {
 
     //Launcher Code
     public void preparelaunch(){
-        leftShoot.setPower(0.38);
-        rightShoot.setPower(0.38);
+        leftShoot.setPower(0.42);
+        rightShoot.setPower(0.42);
     }
 
     //BootKicker Code
@@ -275,18 +263,19 @@ public class Soldiers_Shared {
 
         } else {
             autoSort();
+green_shoot();
 
-            color = bench.getDetectedColor(telemetry);
-            if (color == TestBenchColor.DetectedColor.GREEN) {
-                launch();
-            } else {
-                autoSort();
-                color = bench.getDetectedColor(telemetry);
-                if (color == TestBenchColor.DetectedColor.GREEN) {
-                    launch();
-                }
-
-            }
+//            color = bench.getDetectedColor(telemetry);
+//            if (color == TestBenchColor.DetectedColor.GREEN) {
+//                launch();
+//            } else {
+//                autoSort();
+//                color = bench.getDetectedColor(telemetry);
+//                if (color == TestBenchColor.DetectedColor.GREEN) {
+//                    launch();
+//                }
+//
+//            }
         }
 
         // calls
@@ -305,24 +294,28 @@ public class Soldiers_Shared {
 
         } else {
             autoSort();
+            purple_shoot();
 
-            color = bench.getDetectedColor(telemetry);
-            if (color == TestBenchColor.DetectedColor.PURPLE) {
-                launch();
-            } else {
-                autoSort();
-                color = bench.getDetectedColor(telemetry);
-                if (color == TestBenchColor.DetectedColor.PURPLE) {
-                    launch();
-                }
 
-            }
+//            color = bench.getDetectedColor(telemetry);
+//            if (color == TestBenchColor.DetectedColor.PURPLE) {
+//                launch();
+//            } else {
+//                autoSort();
+//                color = bench.getDetectedColor(telemetry);
+//                if (color == TestBenchColor.DetectedColor.PURPLE) {
+//                    launch();
+//                }
+//
+//            }
         }
     }
 
         //Purple-Purple-Green Shoot
     public void PPG () {
+
             preparelaunch();
+              sleep(3000);
             purple_shoot();
             sleep(200);
             purple_shoot();
@@ -333,6 +326,7 @@ public class Soldiers_Shared {
             rightShoot.setPower(0);
     }
     public void PGP () {
+        sleep(2500);
         preparelaunch();
         purple_shoot();
         sleep(200);
@@ -344,6 +338,7 @@ public class Soldiers_Shared {
         rightShoot.setPower(0);
     }
     public void GPP () {
+        sleep(2500);
         preparelaunch();
         green_shoot();
         sleep(200);
