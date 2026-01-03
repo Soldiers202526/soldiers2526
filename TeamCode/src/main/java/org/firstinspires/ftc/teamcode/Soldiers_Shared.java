@@ -2,6 +2,7 @@
 //Import Libraries
 
 package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -34,7 +35,6 @@ public abstract class Soldiers_Shared extends LinearOpMode {
     private static final double TICKS_PER_REV = 765.0;   // REV 25:1 HD Hex
     private static final int NUM_POSITIONS = 6;
     private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS; // ~116.7 ticks per slot
-
 
 
     //Sorter Stuff
@@ -82,7 +82,6 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         rightShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-
         bootKicker = hw_map.get(Servo.class, "bootkicker");
         bootKicker.setPosition(.98);
 
@@ -124,12 +123,10 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         }
 
 
-            frontLeftPower *= speed_fraction;
-            backLeftPower *= speed_fraction;
-            frontRightPower *= speed_fraction;
-            backRightPower *= speed_fraction;
-
-
+        frontLeftPower *= speed_fraction;
+        backLeftPower *= speed_fraction;
+        frontRightPower *= speed_fraction;
+        backRightPower *= speed_fraction;
 
 
         frontLeft.setPower(frontLeftPower);
@@ -205,24 +202,20 @@ public abstract class Soldiers_Shared extends LinearOpMode {
     //Intake Code
     public void doIntake(boolean intake_collect, boolean intake_stop, boolean intake_eject) {
 
-        if(intake_stop) {
+        if (intake_stop) {
             intake.setPower(0);
-        }
-
-        else if (intake_eject) {
+        } else if (intake_eject) {
             intake.setPower(-1);
-        }
-
-        else if(intake_collect) {
+        } else if (intake_collect) {
             intake.setPower(1);
         }
 
     }
 
     //Launcher Code
-    public void preparelaunch(){
-        leftShoot.setPower(0.42);
-        rightShoot.setPower(0.42);
+    public void preparelaunch() {
+        leftShoot.setPower(0.35);
+        rightShoot.setPower(0.35);
     }
 
     //BootKicker Code
@@ -241,7 +234,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         int position = aSequence[aIndex];
         aIndex = (aIndex + 1) % aSequence.length;
 
-        int targetTicks = (int)(TICKS_PER_POSITION * (position - 1));
+        int targetTicks = (int) (TICKS_PER_POSITION * (position - 1));
 
         // FORCE target forward only
         while (targetTicks <= sorter.getCurrentPosition()) {
@@ -249,8 +242,8 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         }
 
         sorter.setTargetPosition(targetTicks);
-        sorter.setPower(1);
-        sleep(1000);
+        sorter.setPower(0.6);
+        sleep(1500);
     }
 
     //Green Shoot
@@ -263,7 +256,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
         } else {
             autoSort();
-green_shoot();
+            green_shoot();
 
 //            color = bench.getDetectedColor(telemetry);
 //            if (color == TestBenchColor.DetectedColor.GREEN) {
@@ -284,7 +277,7 @@ green_shoot();
 
     //Purple Shoot
 
-    public void purple_shoot () {
+    public void purple_shoot() {
 
 
         TestBenchColor.DetectedColor color = bench.getDetectedColor(telemetry);
@@ -311,21 +304,22 @@ green_shoot();
         }
     }
 
-        //Purple-Purple-Green Shoot
-    public void PPG () {
+    //Purple-Purple-Green Shoot
+    public void PPG() {
 
-            preparelaunch();
-              sleep(3000);
-            purple_shoot();
-            sleep(200);
-            purple_shoot();
-            sleep(200);
-            green_shoot();
-            sleep(200);
-            leftShoot.setPower(0);
-            rightShoot.setPower(0);
+        preparelaunch();
+        sleep(1000);
+        purple_shoot();
+        sleep(200);
+        purple_shoot();
+        sleep(200);
+        green_shoot();
+        sleep(200);
+        leftShoot.setPower(0);
+        rightShoot.setPower(0);
     }
-    public void PGP () {
+
+    public void PGP() {
         sleep(2500);
         preparelaunch();
         purple_shoot();
@@ -337,7 +331,8 @@ green_shoot();
         leftShoot.setPower(0);
         rightShoot.setPower(0);
     }
-    public void GPP () {
+
+    public void GPP() {
         sleep(2500);
         preparelaunch();
         green_shoot();
@@ -350,4 +345,4 @@ green_shoot();
         rightShoot.setPower(0);
     }
 
-    }
+}
