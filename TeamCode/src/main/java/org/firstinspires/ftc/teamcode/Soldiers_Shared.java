@@ -320,8 +320,9 @@ public abstract class Soldiers_Shared extends LinearOpMode {
     }
 
     public void PGP() {
-        sleep(2500);
+
         preparelaunch();
+        sleep(1000);
         purple_shoot();
         sleep(200);
         green_shoot();
@@ -333,8 +334,8 @@ public abstract class Soldiers_Shared extends LinearOpMode {
     }
 
     public void GPP() {
-        sleep(2500);
         preparelaunch();
+        sleep(1000);
         green_shoot();
         sleep(200);
         purple_shoot();

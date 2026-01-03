@@ -38,8 +38,16 @@ public class SoldiersTeleop extends Soldiers_Shared {
 
             //PPG
             if (gamepad2.yWasPressed()) {
-            PPG();
-        }
+                PPG();
+            }
+            //PGP
+            else if (gamepad2.bWasPressed()) {
+                PGP();
+            }
+            //GPP
+            else if (gamepad2.xWasPressed()) {
+                GPP();
+            }
 
 
             telemetry.update();
