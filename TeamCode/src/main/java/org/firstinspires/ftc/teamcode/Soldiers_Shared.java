@@ -200,14 +200,14 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
 
     //Intake Code
-    public void doIntake(boolean intake_collect, boolean intake_stop, boolean intake_eject) {
+    public void doIntake(boolean intake_collect, boolean intake_eject) {
 
-        if (intake_stop) {
-            intake.setPower(0);
-        } else if (intake_eject) {
+        if (intake_eject) {
             intake.setPower(-1);
         } else if (intake_collect) {
-            intake.setPower(1);
+            intake.setPower(0.8);
+        } else {
+            intake.setPower(0);
         }
 
     }

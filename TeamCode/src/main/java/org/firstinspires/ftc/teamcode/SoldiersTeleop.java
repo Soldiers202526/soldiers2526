@@ -34,7 +34,7 @@ public class SoldiersTeleop extends Soldiers_Shared {
 
             //Intake Code
 
-            doIntake(gamepad2.aWasPressed(), gamepad2.aWasReleased(), gamepad1.bWasPressed() && gamepad2.bWasPressed());
+            doIntake(gamepad2.right_trigger > 0.3, gamepad2.left_trigger > 0.2 && gamepad2.right_trigger > 0.2 );
 
             //PPG
             if (gamepad2.yWasPressed()) {
