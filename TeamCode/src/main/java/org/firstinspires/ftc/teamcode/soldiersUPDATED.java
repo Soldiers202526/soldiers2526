@@ -36,7 +36,7 @@ public class soldiersUPDATED extends LinearOpMode {
 
         // Reverse the right side motors. Adjust if needed based on your robot’s setup
         //frontRight.setDirection(DcMotor.Direction.REVERSE);
-        //backRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.REVERSE);

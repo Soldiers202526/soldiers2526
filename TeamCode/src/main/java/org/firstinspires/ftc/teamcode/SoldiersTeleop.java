@@ -34,7 +34,7 @@ public class SoldiersTeleop extends Soldiers_Shared {
 
             //Intake Code
 
-            doIntake(gamepad2.right_trigger > 0.3, gamepad2.left_trigger > 0.2 && gamepad2.right_trigger > 0.2 );
+            //doIntake(gamepad2.right_trigger > 0.3, gamepad1.left_trigger > 0.8 && gamepad2.right_trigger > 0.8 );
 
             //PPG
             if (gamepad2.yWasPressed()) {
@@ -47,6 +47,17 @@ public class SoldiersTeleop extends Soldiers_Shared {
             //GPP
             else if (gamepad2.xWasPressed()) {
                 GPP();
+            }
+            //just shoot all 3 without using color sensor
+            else if (gamepad2.aWasPressed()) {
+                ALL();
+            }
+
+
+            autoIntake( gamepad1.yWasPressed(), gamepad1.rightBumperWasPressed(), gamepad1.leftBumperWasPressed());
+
+            if (gamepad1.aWasPressed()) {
+                intakePos();
             }
 
 

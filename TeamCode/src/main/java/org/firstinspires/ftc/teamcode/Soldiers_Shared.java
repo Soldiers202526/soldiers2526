@@ -48,9 +48,6 @@ public abstract class Soldiers_Shared extends LinearOpMode {
     //Initial Intake State
     private int intake_state = 0;
 
-    //Initial Tilt State
-    private int tilt_state = 0;
-
     //Constructor
 
     public void init(HardwareMap hw_map) {
@@ -200,17 +197,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
 
     //Intake Code
-    public void doIntake(boolean intake_collect, boolean intake_eject) {
 
-        if (intake_eject) {
-            intake.setPower(-1);
-        } else if (intake_collect) {
-            intake.setPower(0.8);
-        } else {
-            intake.setPower(0);
-        }
-
-    }
 
     //Launcher Code
     public void preparelaunch() {
@@ -244,6 +231,23 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         sorter.setTargetPosition(targetTicks);
         sorter.setPower(0.6);
         sleep(1500);
+    }
+
+    public void intakePos() {
+        //aPressed = true;
+
+        int position = bSequence[bIndex];
+        bIndex = (bIndex + 1) % bSequence.length;
+
+        int targetTicks = (int) (TICKS_PER_POSITION * (position - 1));
+
+        // FORCE target forward only
+        while (targetTicks <= sorter.getCurrentPosition()) {
+            targetTicks += (int) TICKS_PER_REV;
+        }
+
+        sorter.setTargetPosition(targetTicks);
+        sorter.setPower(0.6);
     }
 
     //Green Shoot
@@ -346,4 +350,65 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         rightShoot.setPower(0);
     }
 
+
+    public void ALL() {
+        preparelaunch();
+        sleep(1000);
+        launch();
+        sleep(200);
+        launch();
+        sleep(200);
+        launch();
+        sleep(200);
+        leftShoot.setPower(0);
+        rightShoot.setPower(0);
+    }
+
+    public void autoIntake(boolean stop_intake, boolean start_intake, boolean start_outtake) {
+        if (intake_state == 0) {
+            intake.setPower(0);
+
+            if (start_intake) {
+                intake_state = 1;
+            }
+
+            if (start_outtake) {
+                intake_state = 2;
+            }
+
+        }
+        else if (intake_state == 1) {
+            intake.setPower(0.7);
+
+
+
+            if (stop_intake) {
+                intake_state = 0;
+            }
+
+            if (start_outtake) {
+                intake_state = 2;
+            }
+
+
+        }
+        else if (intake_state == 2) {
+            intake.setPower(-0.5);
+
+
+
+            if (stop_intake) {
+                intake_state = 0;
+            }
+
+            if (start_intake) {
+                intake_state = 1;
+            }
+
+        }
+
+        else {
+            intake_state = 0;
+        }
+    }
 }

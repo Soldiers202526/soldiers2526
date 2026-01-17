@@ -29,6 +29,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Prism.Color;
+import org.firstinspires.ftc.teamcode.Prism.Direction;
 import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
 import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
 
@@ -66,8 +67,8 @@ public class LED_test extends LinearOpMode {
     GoBildaPrismDriver Right;
     GoBildaPrismDriver Left;
 
-    PrismAnimations.Solid solid = new PrismAnimations.Solid(new Color(0,0,0));
-    PrismAnimations.DroidScan greenDroid = new PrismAnimations.DroidScan();
+    PrismAnimations.Solid solid = new PrismAnimations.Solid(new Color(0,50,0));
+    PrismAnimations.Snakes snake = new PrismAnimations.Snakes();
 
     @Override
     public void runOpMode() {
@@ -89,16 +90,14 @@ public class LED_test extends LinearOpMode {
         solid.setStopIndex(12);
 
 
-        greenDroid.setPrimaryColor(Color.GREEN);
-        greenDroid.setSpeed(.4f);
-        greenDroid.setEyeWidth(3);
-        greenDroid.setDroidScanStyle(PrismAnimations.DroidScan.DroidScanStyle.NO_TAIL);
-       // greenDroid.setSecondaryColor(new Color(0,150,0));
 
-//        rainbowSnakes.setNumberOfSnakes(2);
-//        rainbowSnakes.setSnakeLength(3);
-//        rainbowSnakes.setSpacingBetween(6);
-//        rainbowSnakes.setSpeed(0.5f);
+
+       snake.setBackgroundColor(new Color(0,50,0));
+       snake.setSnakeLength(8);
+       snake.setDirection(Direction.Forward);
+       snake.setColors(Color.GREEN);
+       snake.setSpacingBetween(2);
+       snake.setSpeed(0.5f);
 
         telemetry.addData("Device ID: ", Right.getDeviceID());
         telemetry.addData("Firmware Version: ", Right.getFirmwareVersionString());
@@ -120,22 +119,29 @@ public class LED_test extends LinearOpMode {
         waitForStart();
         resetRuntime();
 
-        long Time = System.currentTimeMillis();
+
+        Right.insertAndUpdateAnimation(LayerHeight.LAYER_1, snake);
+        Left.insertAndUpdateAnimation(LayerHeight.LAYER_1, snake);
+
+
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            if (state) {
-                Right.insertAndUpdateAnimation(LayerHeight.LAYER_1, greenDroid);
-                Left.insertAndUpdateAnimation(LayerHeight.LAYER_1, greenDroid);
-                state = false;
-                Time = System.currentTimeMillis()
-            }
 
-            if (!state && System.currentTimeMillis() - Time > 399 ) {
-                state = true;
 
-            }
+
+//            if (state) {
+
+//                state = false;
+               // Time = System.currentTimeMillis();
+//            }
+//
+//            if (!state && System.currentTimeMillis() - Time > 400 ) {
+//                state = true;
+//
+//            }
 
 //            Right.insertAndUpdateAnimation(LayerHeight.LAYER_1, greenDroid);
 //            Left.insertAndUpdateAnimation(LayerHeight.LAYER_1, greenDroid);
@@ -172,12 +178,12 @@ public class LED_test extends LinearOpMode {
             telemetry.addLine("Press X to clear current animations.");
             telemetry.addLine("Press D-Pad Down to save current animations to Artboard #0");
             telemetry.addLine();
-            telemetry.addData("Run Time (Hours): ",Left.getRunTime(TimeUnit.HOURS));
-            telemetry.addData("Run Time (Minutes): ",Left.getRunTime(TimeUnit.MINUTES));
+//            telemetry.addData("Run Time (Hours): ",Left.getRunTime(TimeUnit.HOURS));
+//            telemetry.addData("Run Time (Minutes): ",Left.getRunTime(TimeUnit.MINUTES));
             telemetry.addData("Number of LEDS: ", Left.getNumberOfLEDs());
             telemetry.addData("Current FPS: ", Left.getCurrentFPS());
-            telemetry.addData("Run Time (Hours): ",Right.getRunTime(TimeUnit.HOURS));
-            telemetry.addData("Run Time (Minutes): ",Right.getRunTime(TimeUnit.MINUTES));
+//            telemetry.addData("Run Time (Hours): ",Right.getRunTime(TimeUnit.HOURS));
+//            telemetry.addData("Run Time (Minutes): ",Right.getRunTime(TimeUnit.MINUTES));
             telemetry.addData("Number of LEDS: ", Right.getNumberOfLEDs());
             telemetry.addData("Current FPS: ", Right.getCurrentFPS());
             telemetry.update();
