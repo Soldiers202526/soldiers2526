@@ -411,4 +411,5 @@ public abstract class Soldiers_Shared extends LinearOpMode {
             intake_state = 0;
         }
     }
+
 }
