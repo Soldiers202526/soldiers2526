@@ -1,415 +1,214 @@
-
-//Import Libraries
-
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+public class Soldiers_Shared {
 
-public abstract class Soldiers_Shared extends LinearOpMode {
+    /* ===================== FTC HANDLES ===================== */
 
+    private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
 
-    TestBenchColor bench = new TestBenchColor();
+    /* ===================== HARDWARE ===================== */
 
-    //Declare Motors
-    private DcMotor frontLeft = null;
-    private DcMotor backLeft = null;
-    private DcMotor frontRight = null;
-    private DcMotor backRight = null;
-    private DcMotor intake = null;
-    private DcMotor sorter = null;
-    private DcMotorEx leftShoot = null;
-    private DcMotorEx rightShoot = null;
+    private DcMotor frontLeft, backLeft, frontRight, backRight;
+    private DcMotor intake, sorter;
+    private DcMotorEx leftShoot, rightShoot;
+    private Servo bootKicker, tiltAdjust;
 
-    //Declare Servos
-    private Servo bootKicker = null;
-    private Servo tiltAdjust = null;
+    private final TestBenchColor bench = new TestBenchColor();
 
-    //Sorter
+    /* ===================== SORTER CONSTANTS ===================== */
 
-    private static final double TICKS_PER_REV = 765.0;   // REV 25:1 HD Hex
+    private static final double TICKS_PER_REV = 765.0;
     private static final int NUM_POSITIONS = 6;
-    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS; // ~116.7 ticks per slot
+    private static final double TICKS_PER_POSITION = TICKS_PER_REV / NUM_POSITIONS;
 
+    private final int[] aSequence = {1, 3, 5};
+    private final int[] bSequence = {2, 4, 6};
+    private int aIndex = 0;
+    private int bIndex = 0;
 
-    //Sorter Stuff
-    private final int[] aSequence = {1, 3, 5}; // positions for A
-    private final int[] bSequence = {2, 4, 6}; // positions for B
-    private int aIndex = 0; // tracks current position in A sequence
-    private int bIndex = 0; // tracks current position in B sequence
-    boolean aPressed = false;
-    boolean bPressed = false;
+    /* ===================== STATE ===================== */
 
-    //Initial Intake State
-    private int intake_state = 0;
+    private int intakeState = 0;
 
-    //Constructor
+    private int launchState = 0;
+    private final ElapsedTime launchTimer = new ElapsedTime();
 
-    public void init(HardwareMap hw_map) {
-        frontLeft = hw_map.get(DcMotor.class, "frontLeft");
-        backLeft = hw_map.get(DcMotor.class, "backLeft");
-        frontRight = hw_map.get(DcMotor.class, "frontRight");
-        backRight = hw_map.get(DcMotor.class, "backRight");
+    private boolean sorting = false;
+
+    private boolean greenShootActive = false;
+    private boolean purpleShootActive = false;
+
+    /* ===================== CONSTRUCTOR ===================== */
+
+    public Soldiers_Shared(HardwareMap hw, Telemetry tel) {
+        this.hardwareMap = hw;
+        this.telemetry = tel;
+    }
+
+    /* ===================== INIT ===================== */
+
+    public void init() {
+
+        frontLeft  = hardwareMap.get(DcMotor.class, "frontLeft");
+        backLeft   = hardwareMap.get(DcMotor.class, "backLeft");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        backRight  = hardwareMap.get(DcMotor.class, "backRight");
+
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        //backRight.setDirection(DcMotor.Direction.REVERSE);
 
-        bench.init(hw_map);
+        intake = hardwareMap.get(DcMotor.class, "intake");
 
-        intake = hw_map.get(DcMotor.class, "intake");
-
-        sorter = hw_map.get(DcMotor.class, "sorter");
+        sorter = hardwareMap.get(DcMotor.class, "sorter");
         sorter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sorter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         sorter.setTargetPosition(0);
         sorter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftShoot = hw_map.get(DcMotorEx.class, "leftShoot");
-        rightShoot = hw_map.get(DcMotorEx.class, "rightShoot");
+        leftShoot  = hardwareMap.get(DcMotorEx.class, "leftShoot");
+        rightShoot = hardwareMap.get(DcMotorEx.class, "rightShoot");
+
         leftShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        bootKicker = hardwareMap.get(Servo.class, "bootkicker");
+        bootKicker.setPosition(0.98);
 
-        bootKicker = hw_map.get(Servo.class, "bootkicker");
-        bootKicker.setPosition(.98);
-
-        tiltAdjust = hw_map.get(Servo.class, "tiltAdjust");
+        tiltAdjust = hardwareMap.get(Servo.class, "tiltAdjust");
         tiltAdjust.setPosition(1.0);
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        bench.init(hardwareMap);
 
+        telemetry.addData("SoldiersShared", "Initialized");
     }
 
+    /* ===================== UPDATE ===================== */
 
-    //Drive Code
-    public void doDrive(double forw_back, double left_right, double spin, double speed_fraction) {
+    public void update() {
+        updateLaunch();
+        updateGreenShoot();
+        updatePurpleShoot();
+    }
 
+    /* ===================== DRIVE ===================== */
 
-        double y = forw_back;   //Left Stick Y
-        double x = -left_right;  // Left Stick X
-        double rx = -spin; // Right Stick X
+    public void drive(double y, double x, double rx, double speed) {
 
+        double fl = y + x + rx;
+        double bl = y - x + rx;
+        double fr = y - x - rx;
+        double br = y + x - rx;
 
-        double frontLeftPower = y + x + rx;
-        double backLeftPower = y - x + rx;
-        double frontRightPower = y - x - rx;
-        double backRightPower = y + x - rx;
+        double max = Math.max(Math.abs(fl),
+                Math.max(Math.abs(bl), Math.max(Math.abs(fr), Math.abs(br))));
 
-
-        // Normalize powers if any value is greater than 1
-        double max = Math.max(Math.abs(frontLeftPower), Math.max(Math.abs(backLeftPower),
-                Math.max(Math.abs(frontRightPower), Math.abs(backRightPower))));
-
-
-        // Calculate motor powers
         if (max > 1.0) {
-            frontLeftPower /= max;
-            backLeftPower /= max;
-            frontRightPower /= max;
-            backRightPower /= max;
+            fl /= max; bl /= max; fr /= max; br /= max;
         }
 
-
-        frontLeftPower *= speed_fraction;
-        backLeftPower *= speed_fraction;
-        frontRightPower *= speed_fraction;
-        backRightPower *= speed_fraction;
-
-
-        frontLeft.setPower(frontLeftPower);
-        backLeft.setPower(backLeftPower);
-        frontRight.setPower(frontRightPower);
-        backRight.setPower(backRightPower);
-
-
-        telemetry.addData("Front Left", frontLeftPower);
-        telemetry.addData("Back Left", backLeftPower);
-        telemetry.addData("Front Right", frontRightPower);
-        telemetry.addData("Back Right", backRightPower);
-
+        frontLeft.setPower(fl * speed);
+        backLeft.setPower(bl * speed);
+        frontRight.setPower(fr * speed);
+        backRight.setPower(br * speed);
     }
 
-    //Intake State Machine
+    /* ===================== SHOOTER ===================== */
 
-     /* private void doIntake() {
-        if (intake_state == 0) {
-            // action
-            intake.setPower(0);
-
-            // transition
-            if (gamepad2.b && gamepad1.b) {
-                intake_state = 1;
-            } else if (gamepad2.a) {
-                intake_state = 4;
-            }
-        } else if (intake_state == 1) {
-            //transition
-            if (!gamepad2.b && !gamepad1.b) {
-                intake_state = 2;
-            }
-        } else if (intake_state == 2) {
-            // action
-            intake.setPower(-1);
-
-            // transition
-            if (gamepad2.b && gamepad1.b) {
-                intake_state = 3;
-            } else if (gamepad2.a) {
-                intake_state = 4;
-            }
-        } else if (intake_state == 3) {
-            // transition
-            if (!gamepad2.b && !gamepad1.b) {
-                intake_state = 0;
-            }
-        } else if (intake_state == 4) {
-            if (!gamepad2.a) {
-                intake_state = 5;
-            }
-        } else if (intake_state == 5) {
-            intake.setPower(1);
-
-            //transition
-            if (gamepad2.a) {
-                intake_state = 6;
-            } else if (gamepad2.b && gamepad1.b) {
-                intake_state = 1;
-            }
-        } else if (intake_state == 6) {
-            if (!gamepad2.a) {
-                intake_state = 0;
-            }
-        } else {
-            telemetry.addData("Invalid Intake State", intake_state);
-        }
-    }
-*/
-
-
-    //Intake Code
-
-
-    //Launcher Code
-    public void preparelaunch() {
+    public void prepareLaunch() {
         leftShoot.setPower(0.35);
         rightShoot.setPower(0.35);
     }
 
-    //BootKicker Code
-    public void launch() {
-        bootKicker.setPosition(0.75);
-        sleep(500);
-        bootKicker.setPosition(.98);
-        sleep(200);
+    public void startLaunch() {
+        launchState = 1;
+        launchTimer.reset();
     }
 
-    //Sorter Code
+    private void updateLaunch() {
+        if (launchState == 1) {
+            bootKicker.setPosition(0.75);
+            launchTimer.reset();
+            launchState = 2;
+        }
+        else if (launchState == 2 && launchTimer.milliseconds() > 500) {
+            bootKicker.setPosition(0.98);
+            launchTimer.reset();
+            launchState = 3;
+        }
+        else if (launchState == 3 && launchTimer.milliseconds() > 200) {
+            launchState = 0;
+        }
+    }
 
-    public void autoSort() {
-        //aPressed = true;
+    /* ===================== SORTER ===================== */
 
+    private void startAutoSort() {
         int position = aSequence[aIndex];
         aIndex = (aIndex + 1) % aSequence.length;
 
-        int targetTicks = (int) (TICKS_PER_POSITION * (position - 1));
-
-        // FORCE target forward only
+        int targetTicks = (int)(TICKS_PER_POSITION * (position - 1));
         while (targetTicks <= sorter.getCurrentPosition()) {
-            targetTicks += (int) TICKS_PER_REV;
+            targetTicks += TICKS_PER_REV;
         }
 
         sorter.setTargetPosition(targetTicks);
         sorter.setPower(0.6);
-        sleep(1500);
+        sorting = true;
     }
 
-    public void intakePos() {
-        //aPressed = true;
-
-        int position = bSequence[bIndex];
-        bIndex = (bIndex + 1) % bSequence.length;
-
-        int targetTicks = (int) (TICKS_PER_POSITION * (position - 1));
-
-        // FORCE target forward only
-        while (targetTicks <= sorter.getCurrentPosition()) {
-            targetTicks += (int) TICKS_PER_REV;
-        }
-
-        sorter.setTargetPosition(targetTicks);
-        sorter.setPower(0.6);
+    private boolean isSortingDone() {
+        return !sorter.isBusy();
     }
 
-    //Green Shoot
+    /* ===================== COLOR SHOOT ===================== */
 
-    public void green_shoot() {
+    public void startGreenShoot() {
+        greenShootActive = true;
+    }
+
+    private void updateGreenShoot() {
+        if (!greenShootActive) return;
+
+        if (launchState != 0 || sorting) return;
 
         TestBenchColor.DetectedColor color = bench.getDetectedColor(telemetry);
+
         if (color == TestBenchColor.DetectedColor.GREEN) {
-            launch();
-
+            startLaunch();
+            greenShootActive = false;
         } else {
-            autoSort();
-            green_shoot();
-
-//            color = bench.getDetectedColor(telemetry);
-//            if (color == TestBenchColor.DetectedColor.GREEN) {
-//                launch();
-//            } else {
-//                autoSort();
-//                color = bench.getDetectedColor(telemetry);
-//                if (color == TestBenchColor.DetectedColor.GREEN) {
-//                    launch();
-//                }
-//
-//            }
+            startAutoSort();
+            sorting = false;
         }
-
-        // calls
     }
 
+    public void startPurpleShoot() {
+        purpleShootActive = true;
+    }
 
-    //Purple Shoot
+    private void updatePurpleShoot() {
+        if (!purpleShootActive) return;
 
-    public void purple_shoot() {
-
+        if (launchState != 0 || sorting) return;
 
         TestBenchColor.DetectedColor color = bench.getDetectedColor(telemetry);
 
         if (color == TestBenchColor.DetectedColor.PURPLE) {
-            launch();
-
+            startLaunch();
+            purpleShootActive = false;
         } else {
-            autoSort();
-            purple_shoot();
-
-
-//            color = bench.getDetectedColor(telemetry);
-//            if (color == TestBenchColor.DetectedColor.PURPLE) {
-//                launch();
-//            } else {
-//                autoSort();
-//                color = bench.getDetectedColor(telemetry);
-//                if (color == TestBenchColor.DetectedColor.PURPLE) {
-//                    launch();
-//                }
-//
-//            }
+            startAutoSort();
+            sorting = false;
         }
     }
-
-    //Purple-Purple-Green Shoot
-    public void PPG() {
-
-        preparelaunch();
-        sleep(1000);
-        purple_shoot();
-        sleep(200);
-        purple_shoot();
-        sleep(200);
-        green_shoot();
-        sleep(200);
-        leftShoot.setPower(0);
-        rightShoot.setPower(0);
-    }
-
-    public void PGP() {
-
-        preparelaunch();
-        sleep(1000);
-        purple_shoot();
-        sleep(200);
-        green_shoot();
-        sleep(200);
-        purple_shoot();
-        sleep(200);
-        leftShoot.setPower(0);
-        rightShoot.setPower(0);
-    }
-
-    public void GPP() {
-        preparelaunch();
-        sleep(1000);
-        green_shoot();
-        sleep(200);
-        purple_shoot();
-        sleep(200);
-        purple_shoot();
-        sleep(200);
-        leftShoot.setPower(0);
-        rightShoot.setPower(0);
-    }
-
-
-    public void ALL() {
-        preparelaunch();
-        sleep(1000);
-        launch();
-        sleep(200);
-        launch();
-        sleep(200);
-        launch();
-        sleep(200);
-        leftShoot.setPower(0);
-        rightShoot.setPower(0);
-    }
-
-    public void autoIntake(boolean stop_intake, boolean start_intake, boolean start_outtake) {
-        if (intake_state == 0) {
-            intake.setPower(0);
-
-            if (start_intake) {
-                intake_state = 1;
-            }
-
-            if (start_outtake) {
-                intake_state = 2;
-            }
-
-        }
-        else if (intake_state == 1) {
-            intake.setPower(0.7);
-
-
-
-            if (stop_intake) {
-                intake_state = 0;
-            }
-
-            if (start_outtake) {
-                intake_state = 2;
-            }
-
-
-        }
-        else if (intake_state == 2) {
-            intake.setPower(-0.5);
-
-
-
-            if (stop_intake) {
-                intake_state = 0;
-            }
-
-            if (start_intake) {
-                intake_state = 1;
-            }
-
-        }
-
-        else {
-            intake_state = 0;
-        }
-    }
-
 }

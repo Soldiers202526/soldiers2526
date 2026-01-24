@@ -59,7 +59,7 @@ import java.util.concurrent.TimeUnit;
  * you can have up to 8 unique Artboards. Artboards are easy and computationally fast to switch between.
  */
 
-@TeleOp(name="Prism Animations Example", group="Linear OpMode")
+@TeleOp(name="LED", group="Linear OpMode")
 //@Disabled
 
 public class LED_test extends LinearOpMode {
