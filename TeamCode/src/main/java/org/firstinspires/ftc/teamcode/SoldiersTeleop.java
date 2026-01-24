@@ -56,7 +56,7 @@ public class SoldiersTeleop extends Soldiers_Shared {
 
             autoIntake( gamepad2.dpadDownWasPressed(), gamepad2.rightBumperWasPressed(), gamepad2.leftBumperWasPressed());
 
-            if (gamepad1.dpadDownWasPressed()) {
+            if (gamepad2.dpadUpWasPressed()) {
                 intakePos();
             }
 
