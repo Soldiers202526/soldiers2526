@@ -32,12 +32,12 @@ public class SoldiersTeleop extends Soldiers_Shared {
 
             doDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, speed_fraction);
 
-            //Intake Code
+           // Intake Code
 
-            //doIntake(gamepad2.right_trigger > 0.3, gamepad1.left_trigger > 0.8 && gamepad2.right_trigger > 0.8 );
+         //   doIntake(gamepad2.right_trigger > 0.3, gamepad1.left_trigger > 0.8 && gamepad2.right_trigger > 0.8 );
 
             //PPG
-            if (gamepad2.yWasPressed()) {
+           /* if (gamepad2.yWasPressed()) {
                 PPG();
             }
             //PGP
@@ -52,12 +52,39 @@ public class SoldiersTeleop extends Soldiers_Shared {
             else if (gamepad2.aWasPressed()) {
                 ALL();
             }
+            */
 
 
-            autoIntake( gamepad2.dpadDownWasPressed(), gamepad2.rightBumperWasPressed(), gamepad2.leftBumperWasPressed());
 
-            if (gamepad2.dpadUpWasPressed()) {
+            autoIntake( gamepad2.b, gamepad2.x, gamepad2.left_bumper && gamepad2.right_bumper);
+
+            if (gamepad2.y) {
                 intakePos();
+            }
+
+            huskylens();
+
+            if (gamepad2.a && MotifID == 1) {
+                PPG();
+            }
+            if (gamepad2.a && MotifID == 2) {
+                PGP();
+            }
+            if (gamepad2.a && MotifID == 3) {
+                GPP();
+            }
+
+
+            if (gamepad2.left_stick_y > 0.5) {
+                preparelaunch();
+                sleep(2500);
+                launch();
+                sleep(500);
+                stop_shoot();
+            }
+
+            if (gamepad2.left_stick_button) {
+                autoSort();
             }
 
 

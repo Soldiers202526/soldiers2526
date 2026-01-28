@@ -3,12 +3,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+
+import java.util.concurrent.TimeUnit;
 
 
 public abstract class Soldiers_Shared extends LinearOpMode {
@@ -48,6 +53,19 @@ public abstract class Soldiers_Shared extends LinearOpMode {
     //Initial Intake State
     private int intake_state = 0;
 
+
+    // husky
+    private final int READ_PERIOD = 1;
+
+    private HuskyLens huskyLens;
+
+    public int MotifID = -1;
+
+
+
+
+
+
     //Constructor
 
     public void init(HardwareMap hw_map) {
@@ -77,6 +95,16 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         rightShoot = hw_map.get(DcMotorEx.class, "rightShoot");
         leftShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+        Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
+        rateLimit.expire();
+        if (!huskyLens.knock()) {
+            telemetry.addData(">>", "Problem communicating with " + huskyLens.getDeviceName());
+        } else {
+            telemetry.addData(">>", "Press start to continue");
+        }
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
 
 
         bootKicker = hw_map.get(Servo.class, "bootkicker");
@@ -308,6 +336,11 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         }
     }
 
+
+    public void stop_shoot() {
+        leftShoot.setPower(0);
+        rightShoot.setPower(0);
+    }
     //Purple-Purple-Green Shoot
     public void PPG() {
 
@@ -319,8 +352,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         sleep(200);
         green_shoot();
         sleep(200);
-        leftShoot.setPower(0);
-        rightShoot.setPower(0);
+        stop_shoot();
     }
 
     public void PGP() {
@@ -333,8 +365,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         sleep(200);
         purple_shoot();
         sleep(200);
-        leftShoot.setPower(0);
-        rightShoot.setPower(0);
+        stop_shoot();
     }
 
     public void GPP() {
@@ -346,8 +377,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         sleep(200);
         purple_shoot();
         sleep(200);
-        leftShoot.setPower(0);
-        rightShoot.setPower(0);
+       stop_shoot();
     }
 
 
@@ -360,9 +390,10 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         sleep(200);
         launch();
         sleep(200);
-        leftShoot.setPower(0);
-        rightShoot.setPower(0);
+       stop_shoot();
     }
+
+
 
     public void autoIntake(boolean stop_intake, boolean start_intake, boolean start_outtake) {
         if (intake_state == 0) {
@@ -376,10 +407,8 @@ public abstract class Soldiers_Shared extends LinearOpMode {
                 intake_state = 2;
             }
 
-        }
-        else if (intake_state == 1) {
+        } else if (intake_state == 1) {
             intake.setPower(0.7);
-
 
 
             if (stop_intake) {
@@ -391,10 +420,8 @@ public abstract class Soldiers_Shared extends LinearOpMode {
             }
 
 
-        }
-        else if (intake_state == 2) {
+        } else if (intake_state == 2) {
             intake.setPower(-0.5);
-
 
 
             if (stop_intake) {
@@ -405,11 +432,21 @@ public abstract class Soldiers_Shared extends LinearOpMode {
                 intake_state = 1;
             }
 
-        }
-
-        else {
+        } else {
             intake_state = 0;
         }
     }
 
+    public void huskylens() {
+        HuskyLens.Block[] blocks = huskyLens.blocks();
+        telemetry.addData("Block count", blocks.length);
+        for (int i = 0; i < blocks.length; i++) {
+            telemetry.addData("Block", blocks[i].toString());
+
+            if (blocks[i].id == 1 || blocks[i].id == 2 || blocks[i].id == 3) {
+                MotifID = blocks[i].id;
+            }
+        }
+
+    }
 }
