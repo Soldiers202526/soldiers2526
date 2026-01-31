@@ -3,6 +3,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +63,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
     public int MotifID = -1;
 
-
+    public Follower follower;
 
 
 
@@ -112,6 +114,9 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
         tiltAdjust = hw_map.get(Servo.class, "tiltAdjust");
         tiltAdjust.setPosition(1.0);
+
+        follower = Constants.createFollower(hardwareMap);
+
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -234,12 +239,13 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         sleep(300);
         leftShoot.setPower(0.35);
         rightShoot.setPower(0.35);
+        sleep(300);
     }
 
     //BootKicker Code
     public void launch() {
         bootKicker.setPosition(0.75);
-        sleep(500);
+        sleep(350);
         bootKicker.setPosition(.98);
         sleep(200);
     }
@@ -261,7 +267,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
         sorter.setTargetPosition(targetTicks);
         sorter.setPower(0.6);
-        sleep(1500);
+        sleep(850);
     }
 
     public void intakePos() {
@@ -348,7 +354,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
     public void PPG() {
 
         preparelaunch();
-        sleep(1000);
+        sleep(250);
         purple_shoot();
         sleep(200);
         purple_shoot();
@@ -361,7 +367,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
     public void PGP() {
 
         preparelaunch();
-        sleep(1000);
+        sleep(250);
         purple_shoot();
         sleep(200);
         green_shoot();
@@ -373,7 +379,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
     public void GPP() {
         preparelaunch();
-        sleep(1000);
+        sleep(250);
         green_shoot();
         sleep(200);
         purple_shoot();
@@ -386,7 +392,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
     public void ALL() {
         preparelaunch();
-        sleep(1000);
+        sleep(250);
         launch();
         sleep(200);
         launch();
