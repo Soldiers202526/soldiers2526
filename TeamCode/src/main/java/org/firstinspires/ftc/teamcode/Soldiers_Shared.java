@@ -229,6 +229,9 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
     //Launcher Code
     public void preparelaunch() {
+        leftShoot.setPower(1);
+        rightShoot.setPower(1);
+        sleep(300);
         leftShoot.setPower(0.35);
         rightShoot.setPower(0.35);
     }

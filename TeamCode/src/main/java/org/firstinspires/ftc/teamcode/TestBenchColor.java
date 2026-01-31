@@ -66,7 +66,7 @@ public class TestBenchColor {
 
         }
 
-        //telemetry.addData("DetectedColor", DetectedColor);
+        //8telemetry.addData("DetectedColor", DetectedColor);
 
     }
 
