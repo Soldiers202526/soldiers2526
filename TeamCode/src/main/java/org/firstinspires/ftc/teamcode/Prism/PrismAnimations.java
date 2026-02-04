@@ -870,9 +870,7 @@ public class PrismAnimations {
          */
         public void setSpeed(float speed)        { this.speed = speed;   }
         public void setColors(Color... colors) {
-            for(int i = 0; i < Math.min(colors.length,10); i++){
-                this.colors[i] = colors[i];
-            }
+            System.arraycopy(colors, 0, this.colors, 0, Math.min(colors.length, 10));
         }
         public void setPixelLength(int pixelLength)   { this.pixelLength = pixelLength; }
         public void setStyle(SingleFillStyle style)   { this.style = style;             }    
@@ -1054,7 +1052,8 @@ public class PrismAnimations {
          * Sets the probability/density of sparkles. Lower is denser. Default is 16.
          * @param sparkleProbability from 0 to 255.
          */
-        public void setSparkleProbability(int sparkleProbability) { this.sparkleProbability = sparkleProbability; };
+        public void setSparkleProbability(int sparkleProbability) { this.sparkleProbability = sparkleProbability; }
+
         //endregion
         @Override
         protected void updateAnimationSpecificValuesOverI2C(I2cDeviceSynchSimple deviceClient)

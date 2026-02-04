@@ -48,7 +48,7 @@ public class GoBildaPrismDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSimpl
     private static final byte DEFAULT_ADDRESS = 0x38;
     private final int MAXIMUM_NUMBER_OF_ANIMATIONS = 10;
     private final int MAXIMUM_NUMBER_OF_ANIMATION_GROUPS = 8;
-    private PrismAnimations.AnimationBase[] animations = new PrismAnimations.AnimationBase[MAXIMUM_NUMBER_OF_ANIMATIONS];
+    private final PrismAnimations.AnimationBase[] animations = new PrismAnimations.AnimationBase[MAXIMUM_NUMBER_OF_ANIMATIONS];
 
     //#region Public Types
     public enum LayerHeight
@@ -122,7 +122,7 @@ public class GoBildaPrismDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSimpl
     {
         READ_ONLY,
         WRITE_ONLY,
-        READ_AND_WRITE;
+        READ_AND_WRITE
     }
 
     /**
