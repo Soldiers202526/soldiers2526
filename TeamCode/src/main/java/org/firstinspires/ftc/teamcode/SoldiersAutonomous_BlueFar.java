@@ -20,6 +20,7 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
         follower.setStartingPose(new Pose(60, 8, Math.toRadians(-90)));
 
         int autostate = 0;
+        boolean stateinit = false;
 
         waitForStart();
 
@@ -28,7 +29,7 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
                         new BezierLine(
                                 new Pose(60.000, 8.000),
 
-                                new Pose(64.000, 78.000)
+                                new Pose(64.000, 74.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-45))
 
@@ -37,9 +38,9 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
         PathChain Path2 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(64, 78),
+                                new Pose(64, 74),
 
-                                new Pose(38, 84)
+                                new Pose(64, 80)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(180))
 
@@ -48,33 +49,46 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
         PathChain Path3 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(38, 84),
+                                new Pose(64, 80),
 
-                                new Pose(32, 84)
+                                new Pose(40, 80)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
-
+                .setBrakingStart(5)
                 .build();
 
         PathChain Path4 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(32, 84),
+                                new Pose(40, 80),
 
-                                new Pose(26, 84)
+                                new Pose(36, 80)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setBrakingStart(5)
 
                 .build();
 
         PathChain Path5 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(26, 84),
+                                new Pose(36, 80),
 
-                                new Pose(60, 82)
+                                new Pose(28, 80)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-42))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                .setBrakingStart(5)
+
+                .build();
+
+        PathChain Path6 = follower.pathBuilder().addPath(
+
+                        new BezierLine(
+                                new Pose(28, 80),
+
+                                new Pose(64, 74)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-45))
 
                 .build();
 
@@ -99,7 +113,7 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
                 telemetry.addData("Motif ID", MotifID);
 
                 if (!follower.getFollowingPathChain()) {
-                    autostate = 2;
+                    autostate++;
                 }
             }
 
@@ -114,57 +128,111 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
                     GPP();
                 }
 
-                autostate = 3;
 
+                intakePos();
+                sleep(500);
+
+                autostate++;
+                autoIntake(false, true, false);
             }
 
             if (autostate == 3) {
-                autoIntake(false, true, false);
-                intakePos();
 
                 // change states
-                follower.followPath(Path2);
-                autostate = 4;
+                if (!stateinit) {
+                   // intakePos();
+                    follower.followPath(Path2);
+                    autoIntake(false, true, false);
+                    stateinit = true;
+                }
+                if (!follower.getFollowingPathChain()) {
+                    sleep(500);
+                    intakePos();
+                    sleep(500);
+                   stateinit = false;
+                    autostate++;
+                }
             }
 
-
-
             if (autostate == 4) {
-                intakePos();
-                follower.followPath(Path3);
-                autostate = 5;
+               // intakePos();
+               // doDrive(0,0,0,0.25);
+                autoIntake(false, true, false);
+                if(!stateinit) {
+                    //intakePos();
+                    follower.followPath(Path3);
+                    stateinit = true;
+                }
+                if (!follower.getFollowingPathChain()) {
+                   // sleep(1000);
+                    sleep(500);
+                    intakePos();
+                    sleep(500);
+                    stateinit = false;
+                    autostate++;
+                }
             }
 
             if (autostate == 5) {
-                intakePos();
-
-                follower.followPath(Path4);
-                autostate = 6;
+                autoIntake(false, true, false);
+               // doDrive(0,0,0,0.25);
+                if (!stateinit) {
+                  //  intakePos();
+                    follower.followPath(Path4);
+                    stateinit = true;
+                }
+                if (!follower.getFollowingPathChain()) {
+                    sleep(500);
+                     intakePos();
+                    sleep(500);
+                    stateinit = false;
+                    autostate++;
+                }
             }
 
             if (autostate == 6) {
-                if (!follower.getFollowingPathChain()) {
-                    sleep(500);
+              //  doDrive(0, 0, 0, .25);
+                autoIntake(false, true, false);
+                if (!stateinit) {
+                    follower.followPath(Path5);
+                    stateinit = true;
                 }
-                follower.followPath(Path5);
-                autostate = 7;
+                if (!follower.getFollowingPathChain()) {
+                    //intakePos();
+                    sleep(1000);
+                    stateinit = false;
+                    autostate++;
+                }
             }
 
             if (autostate == 7) {
-                if (MotifID == 1 && !follower.getFollowingPathChain()) {
+                if (!stateinit) {
+                    sleep(1000);
+                    follower.followPath(Path6);
+                    stateinit = true;
+                }
+                if (!follower.getFollowingPathChain()) {
+                    stateinit = false;
+                    autostate++;
+                }
+            }
+
+            if (autostate == 8) {
+                if (MotifID == 1) {
                     PPG();
                 }
-                if (MotifID == 2 && !follower.getFollowingPathChain()) {
+                if (MotifID == 2) {
                     PGP();
                 }
-                if (MotifID == 3 && !follower.getFollowingPathChain()) {
+                if (MotifID == 3) {
                     GPP();
 
-                    autostate =12;
+                    autostate++;
                 }
 
             }
 
+            telemetry.addData("Auto State", autostate );
 
 
         }
