@@ -88,6 +88,11 @@ public class SoldiersTeleop extends Soldiers_Shared {
             }
 
 
+            if (gamepad1.a) {
+                preparelaunch();
+            }
+
+
 
 
             telemetry.update();

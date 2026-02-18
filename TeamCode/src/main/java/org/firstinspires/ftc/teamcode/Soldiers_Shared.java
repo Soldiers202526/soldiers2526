@@ -3,6 +3,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.drm.DrmStore;
+
 import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -24,12 +26,12 @@ public abstract class Soldiers_Shared extends LinearOpMode {
     TestBenchColor bench = new TestBenchColor();
 
     //Declare Motors
-    private DcMotor frontLeft = null;
-    private DcMotor backLeft = null;
-    private DcMotor frontRight = null;
-    private DcMotor backRight = null;
-    private DcMotor intake = null;
-    private DcMotor sorter = null;
+    private DcMotorEx frontLeft = null;
+    private DcMotorEx backLeft = null;
+    private DcMotorEx frontRight = null;
+    private DcMotorEx backRight = null;
+    private DcMotorEx intake = null;
+    private DcMotorEx sorter = null;
     private DcMotorEx leftShoot = null;
     private DcMotorEx rightShoot = null;
 
@@ -65,29 +67,31 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
     public Follower follower;
 
+private int MaxRecursionNumber = 3;
 
+private int RecursionCount = 0;
 
 
     //Constructor
 
     public void init(HardwareMap hw_map) {
-        frontLeft = hw_map.get(DcMotor.class, "frontLeft");
-        backLeft = hw_map.get(DcMotor.class, "backLeft");
-        frontRight = hw_map.get(DcMotor.class, "frontRight");
-        backRight = hw_map.get(DcMotor.class, "backRight");
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft = hw_map.get(DcMotorEx.class, "frontLeft");
+        backLeft = hw_map.get(DcMotorEx.class, "backLeft");
+        frontRight = hw_map.get(DcMotorEx.class, "frontRight");
+        backRight = hw_map.get(DcMotorEx.class, "backRight");
+        frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        backLeft.setDirection(DcMotorEx.Direction.REVERSE);
         //backRight.setDirection(DcMotor.Direction.REVERSE);
 
         bench.init(hw_map);
 
-        intake = hw_map.get(DcMotor.class, "intake");
+        intake = hw_map.get(DcMotorEx.class, "intake");
 
-        sorter = hw_map.get(DcMotor.class, "sorter");
+        sorter = hw_map.get(DcMotorEx.class, "sorter");
         sorter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sorter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         sorter.setTargetPosition(0);
@@ -95,8 +99,13 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
         leftShoot = hw_map.get(DcMotorEx.class, "leftShoot");
         rightShoot = hw_map.get(DcMotorEx.class, "rightShoot");
-        leftShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftShoot.setDirection(DcMotorEx.Direction.FORWARD);
+        rightShoot.setDirection(DcMotorEx.Direction.REVERSE);
+        leftShoot.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightShoot.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+//        leftShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        rightShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
         Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
@@ -234,12 +243,11 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
     //Launcher Code
     public void preparelaunch() {
-        leftShoot.setPower(1);
-        rightShoot.setPower(1);
-        sleep(300);
-        leftShoot.setPower(0.35);
-        rightShoot.setPower(0.35);
-        sleep(300);
+
+        leftShoot.setVelocity(775);
+        rightShoot.setVelocity(775);
+        telemetry.addData("leftshoot", leftShoot.getVelocity());
+        telemetry.addData("rightshoot", rightShoot.getVelocity());
     }
 
     //BootKicker Code
@@ -267,7 +275,7 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
         sorter.setTargetPosition(targetTicks);
         sorter.setPower(0.6);
-        sleep(850);
+        sleep(1000);
     }
 
     public void intakePos() {
@@ -294,25 +302,19 @@ public abstract class Soldiers_Shared extends LinearOpMode {
         TestBenchColor.DetectedColor color = bench.getDetectedColor(telemetry);
         if (color == TestBenchColor.DetectedColor.GREEN) {
             launch();
+            RecursionCount = 0;
+        }
+        else if (RecursionCount > MaxRecursionNumber){
+            RecursionCount = 0;
 
-        } else {
+        }
+        else {
             autoSort();
+            RecursionCount = RecursionCount + 1;
             green_shoot();
-
-//            color = bench.getDetectedColor(telemetry);
-//            if (color == TestBenchColor.DetectedColor.GREEN) {
-//                launch();
-//            } else {
-//                autoSort();
-//                color = bench.getDetectedColor(telemetry);
-//                if (color == TestBenchColor.DetectedColor.GREEN) {
-//                    launch();
-//                }
-//
-//            }
         }
 
-        // calls
+
     }
 
 
@@ -325,30 +327,25 @@ public abstract class Soldiers_Shared extends LinearOpMode {
 
         if (color == TestBenchColor.DetectedColor.PURPLE) {
             launch();
+            RecursionCount = 0;
 
-        } else {
+        }
+        else if (RecursionCount > MaxRecursionNumber){
+            RecursionCount = 0;
+        }
+        else {
             autoSort();
+            RecursionCount = RecursionCount + 1;
             purple_shoot();
 
 
-//            color = bench.getDetectedColor(telemetry);
-//            if (color == TestBenchColor.DetectedColor.PURPLE) {
-//                launch();
-//            } else {
-//                autoSort();
-//                color = bench.getDetectedColor(telemetry);
-//                if (color == TestBenchColor.DetectedColor.PURPLE) {
-//                    launch();
-//                }
-//
-//            }
         }
     }
 
 
     public void stop_shoot() {
-        leftShoot.setPower(0);
-        rightShoot.setPower(0);
+        leftShoot.setVelocity(0);
+        rightShoot.setVelocity(0);
     }
     //Purple-Purple-Green Shoot
     public void PPG() {
