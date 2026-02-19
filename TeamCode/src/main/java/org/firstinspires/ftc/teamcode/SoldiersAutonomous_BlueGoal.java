@@ -21,7 +21,11 @@ public class SoldiersAutonomous_BlueGoal extends Soldiers_Shared {
         int autostate = 0;
         boolean stateinit = false;
 
+        long timer = System.currentTimeMillis() / 1000;
+
         waitForStart();
+
+
 
         PathChain Path1 = follower.pathBuilder().addPath(
 
@@ -103,6 +107,9 @@ public class SoldiersAutonomous_BlueGoal extends Soldiers_Shared {
                 .build();
 
 
+
+
+
         autostate = 1;
 
 
@@ -116,6 +123,32 @@ public class SoldiersAutonomous_BlueGoal extends Soldiers_Shared {
             telemetry.update();
             follower.update();
 
+
+
+            if (System.currentTimeMillis() / 1000 - timer > 26) {
+                stateinit = false;
+                autostate=0;
+            }
+
+            if (autostate== 0) {
+                if (!stateinit) {
+
+                    PathChain Park = follower.pathBuilder().addPath(
+
+                                    new BezierLine(
+                                            follower.getPose(),
+
+                                            new Pose(105, 33)
+                                    )
+                            ).setLinearHeadingInterpolation(Math.toRadians(follower.getHeading()), Math.toRadians(-90))
+
+                            .build();
+
+                    follower.followPath(Park);
+                    stateinit = true;
+                }
+            }
+
             if (autostate == 1) {
 //                follower.followPath(Path1);
 
@@ -123,6 +156,8 @@ public class SoldiersAutonomous_BlueGoal extends Soldiers_Shared {
                 telemetry.addData("Motif ID", MotifID);
 
                 if (!follower.getFollowingPathChain()) {
+
+
                     sleep(500);
                     autostate = 10;
                 }

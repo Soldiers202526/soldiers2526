@@ -21,6 +21,8 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
 
         int autostate = 0;
         boolean stateinit = false;
+        long timer = System.currentTimeMillis() / 1000;
+
 
         waitForStart();
 
@@ -116,6 +118,30 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
             huskylens();
             telemetry.update();
             follower.update();
+
+            if (System.currentTimeMillis() / 1000 - timer > 26) {
+                stateinit = false;
+                autostate=0;
+            }
+
+            if (autostate== 0) {
+                if (!stateinit) {
+
+                    PathChain Park = follower.pathBuilder().addPath(
+
+                                    new BezierLine(
+                                            follower.getPose(),
+
+                                            new Pose(105, 33)
+                                    )
+                            ).setLinearHeadingInterpolation(Math.toRadians(follower.getHeading()), Math.toRadians(-90))
+
+                            .build();
+
+                    follower.followPath(Park);
+                    stateinit = true;
+                }
+            }
 
             if (autostate == 1) {
 //                follower.followPath(Path1);
