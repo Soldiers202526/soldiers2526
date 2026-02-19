@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-//import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
-
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name = "SoldiersAutonomous_BlueFar ", group = "Drive")
-public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
+//import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
+@Autonomous(name = "SoldiersAutonomous_BlueGoal", group = "Drive")
+public class SoldiersAutonomous_BlueGoal extends Soldiers_Shared {
 
 
     @Override
@@ -17,7 +16,7 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
 
         init(hardwareMap);
 
-        follower.setStartingPose(new Pose(60, 8, Math.toRadians(-90)));
+        follower.setStartingPose(new Pose(28, 133, Math.toRadians(143)));
 
         int autostate = 0;
         boolean stateinit = false;
@@ -27,20 +26,20 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
         PathChain Path1 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(60.000, 8.000),
+                                new Pose(28, 133),
 
                                 new Pose(64.000, 90.000)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
+                ).setLinearHeadingInterpolation(Math.toRadians(143), Math.toRadians(-90))
 
                 .build();
 
         PathChain Path10 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(60.000, 90.000),
+                                new Pose(64.000, 90.000),
 
-                                new Pose(64.000, 78.000)
+                                new Pose(68.000, 78.000)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-45))
 
@@ -49,9 +48,9 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
         PathChain Path2 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(64, 78),
+                                new Pose(68, 78),
 
-                                new Pose(64, 84)
+                                new Pose(68, 84)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(180))
 
@@ -60,7 +59,7 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
         PathChain Path3 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(64, 84),
+                                new Pose(68, 84),
 
                                 new Pose(40, 84)
                         )
@@ -137,8 +136,8 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
                 if (!follower.getFollowingPathChain()) {
 
                     stateinit = false;
-                    autostate = 2;
                     sleep(500);
+                    autostate = 2;
                 }
             }
 

@@ -244,8 +244,8 @@ private int RecursionCount = 0;
     //Launcher Code
     public void preparelaunch() {
 
-        leftShoot.setVelocity(775);
-        rightShoot.setVelocity(775);
+        leftShoot.setVelocity(780);
+        rightShoot.setVelocity(780);
         telemetry.addData("leftshoot", leftShoot.getVelocity());
         telemetry.addData("rightshoot", rightShoot.getVelocity());
     }
@@ -351,7 +351,7 @@ private int RecursionCount = 0;
     public void PPG() {
 
         preparelaunch();
-        sleep(250);
+        sleep(1000);
         purple_shoot();
         sleep(200);
         purple_shoot();
@@ -364,7 +364,7 @@ private int RecursionCount = 0;
     public void PGP() {
 
         preparelaunch();
-        sleep(250);
+        sleep(1000);
         purple_shoot();
         sleep(200);
         green_shoot();
@@ -376,7 +376,7 @@ private int RecursionCount = 0;
 
     public void GPP() {
         preparelaunch();
-        sleep(250);
+        sleep(1000);
         green_shoot();
         sleep(200);
         purple_shoot();
@@ -389,10 +389,14 @@ private int RecursionCount = 0;
 
     public void ALL() {
         preparelaunch();
+        sleep(1000);
+        launch();
+        sleep(250);
+        autoSort();
         sleep(250);
         launch();
-        sleep(200);
-        launch();
+        sleep(250);
+        autoSort();
         sleep(200);
         launch();
         sleep(200);
