@@ -17,7 +17,7 @@ public class SoldiersAutonomous_RedFar extends Soldiers_Shared {
 
         init(hardwareMap);
 
-        follower.setStartingPose(new Pose(84, 8, Math.toRadians(-90)));
+        follower.setStartingPose(new Pose(84, 8, Math.toRadians(-190)));
 
         int autostate = 0;
         boolean stateinit = false;
@@ -35,6 +35,7 @@ public class SoldiersAutonomous_RedFar extends Soldiers_Shared {
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-90))
 
+
                 .build();
 
         PathChain Path10 = follower.pathBuilder().addPath(
@@ -42,9 +43,9 @@ public class SoldiersAutonomous_RedFar extends Soldiers_Shared {
                         new BezierLine(
                                 new Pose(84, 90.000),
 
-                                new Pose(80, 78.000)
+                                new Pose(80,78)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(135))
+                ).setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(-135))
 
                 .build();
 
@@ -55,7 +56,7 @@ public class SoldiersAutonomous_RedFar extends Soldiers_Shared {
 
                                 new Pose(80, 84)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(-180))
+                ).setLinearHeadingInterpolation(Math.toRadians(-135), Math.toRadians(0))
 
                 .build();
 
@@ -66,7 +67,7 @@ public class SoldiersAutonomous_RedFar extends Soldiers_Shared {
 
                                 new Pose(104, 84)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-180))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .setBrakingStart(5)
                 .build();
 
@@ -77,7 +78,7 @@ public class SoldiersAutonomous_RedFar extends Soldiers_Shared {
 
                                 new Pose(108, 84)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(180))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .setBrakingStart(5)
 
                 .build();
@@ -89,7 +90,7 @@ public class SoldiersAutonomous_RedFar extends Soldiers_Shared {
 
                                 new Pose(116, 84)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-180))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .setBrakingStart(5)
 
                 .build();
@@ -101,7 +102,7 @@ public class SoldiersAutonomous_RedFar extends Soldiers_Shared {
 
                                 new Pose(80, 74)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(135))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-150))
 
                 .build();
 

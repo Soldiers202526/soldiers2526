@@ -53,7 +53,7 @@ public class SoldiersAutonomous_RedGoal extends Soldiers_Shared {
                         new BezierLine(
                                 new Pose(80, 78),
 
-                                new Pose(80, 84)
+                                new Pose(80, 80)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(-180))
 
@@ -62,9 +62,9 @@ public class SoldiersAutonomous_RedGoal extends Soldiers_Shared {
         PathChain Path3 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(80, 84),
+                                new Pose(80, 80),
 
-                                new Pose(104, 84)
+                                new Pose(104, 80)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-180))
                 .setBrakingStart(5)
@@ -73,9 +73,9 @@ public class SoldiersAutonomous_RedGoal extends Soldiers_Shared {
         PathChain Path4 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(104, 84),
+                                new Pose(104, 80),
 
-                                new Pose(108, 84)
+                                new Pose(108, 80)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(180))
                 .setBrakingStart(5)
@@ -85,9 +85,9 @@ public class SoldiersAutonomous_RedGoal extends Soldiers_Shared {
         PathChain Path5 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(108, 84),
+                                new Pose(108, 80),
 
-                                new Pose(116, 84)
+                                new Pose(116, 80)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-180))
                 .setBrakingStart(5)
@@ -97,11 +97,11 @@ public class SoldiersAutonomous_RedGoal extends Soldiers_Shared {
         PathChain Path6 = follower.pathBuilder().addPath(
 
                         new BezierLine(
-                                new Pose(116, 84),
+                                new Pose(116, 80),
 
                                 new Pose(80, 74)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-45))
+                ).setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(-150))
 
                 .build();
 

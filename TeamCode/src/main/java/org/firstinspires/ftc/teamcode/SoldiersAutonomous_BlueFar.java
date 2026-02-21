@@ -101,7 +101,7 @@ public class SoldiersAutonomous_BlueFar extends Soldiers_Shared {
 
                                 new Pose(64, 74)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-45))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(-30))
 
                 .build();
 

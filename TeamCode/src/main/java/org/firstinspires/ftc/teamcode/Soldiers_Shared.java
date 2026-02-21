@@ -351,7 +351,7 @@ private int RecursionCount = 0;
     public void PPG() {
 
         preparelaunch();
-        sleep(1000);
+        sleep(1500);
         purple_shoot();
         sleep(200);
         purple_shoot();
@@ -359,12 +359,14 @@ private int RecursionCount = 0;
         green_shoot();
         sleep(200);
         stop_shoot();
+
+
     }
 
     public void PGP() {
 
         preparelaunch();
-        sleep(1000);
+        sleep(1500);
         purple_shoot();
         sleep(200);
         green_shoot();
@@ -376,7 +378,7 @@ private int RecursionCount = 0;
 
     public void GPP() {
         preparelaunch();
-        sleep(1000);
+        sleep(1500);
         green_shoot();
         sleep(200);
         purple_shoot();
@@ -389,7 +391,7 @@ private int RecursionCount = 0;
 
     public void ALL() {
         preparelaunch();
-        sleep(1000);
+        sleep(1500);
         launch();
         sleep(250);
         autoSort();
