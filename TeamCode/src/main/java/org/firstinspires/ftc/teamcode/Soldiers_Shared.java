@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -85,6 +86,8 @@ private int RecursionCount = 0;
         backRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
         backLeft.setDirection(DcMotorEx.Direction.REVERSE);
+
+
         //backRight.setDirection(DcMotor.Direction.REVERSE);
 
         bench.init(hw_map);
@@ -103,6 +106,22 @@ private int RecursionCount = 0;
         rightShoot.setDirection(DcMotorEx.Direction.REVERSE);
         leftShoot.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightShoot.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        leftShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        PIDFCoefficients PIDFCoefficient = leftShoot.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//        PIDFCoefficients rightShootPIDFCoefficient = rightShoot.getPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        telemetry.addData("left", PIDFCoefficient);
+//        telemetry.addData("right", rightShootPIDFCoefficient);
+//        leftShoot.setPIDFCoefficients();
+//        rightShoot.setPIDFCoefficients();
+        PIDFCoefficient.p = 120;
+        PIDFCoefficient.i = 5;
+        PIDFCoefficient.d = 0;
+        PIDFCoefficient.f = 0;
+
+        leftShoot.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, PIDFCoefficient);
+        rightShoot.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, PIDFCoefficient);
+
 
 //        leftShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        rightShoot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -252,10 +271,18 @@ private int RecursionCount = 0;
 
     //BootKicker Code
     public void launch() {
+        while(!(820>leftShoot.getVelocity()
+                && leftShoot.getVelocity()> 740
+                && 820>rightShoot.getVelocity()
+                && rightShoot.getVelocity() > 740)) {
+            sleep(10);
+        }
+
         bootKicker.setPosition(0.75);
         sleep(350);
         bootKicker.setPosition(.98);
         sleep(200);
+
     }
 
     //Sorter Code
@@ -351,7 +378,6 @@ private int RecursionCount = 0;
     public void PPG() {
 
         preparelaunch();
-        sleep(1500);
         purple_shoot();
         sleep(200);
         purple_shoot();
@@ -366,7 +392,6 @@ private int RecursionCount = 0;
     public void PGP() {
 
         preparelaunch();
-        sleep(1500);
         purple_shoot();
         sleep(200);
         green_shoot();
@@ -378,7 +403,6 @@ private int RecursionCount = 0;
 
     public void GPP() {
         preparelaunch();
-        sleep(1500);
         green_shoot();
         sleep(200);
         purple_shoot();
@@ -391,7 +415,6 @@ private int RecursionCount = 0;
 
     public void ALL() {
         preparelaunch();
-        sleep(1500);
         launch();
         sleep(250);
         autoSort();

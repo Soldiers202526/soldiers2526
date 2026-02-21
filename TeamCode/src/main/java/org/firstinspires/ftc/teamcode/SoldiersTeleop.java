@@ -88,9 +88,9 @@ public class SoldiersTeleop extends Soldiers_Shared {
             }
 
 
-//            if (gamepad1.a) {
-//                preparelaunch();
-//            }
+            if (gamepad1.a) {
+                preparelaunch();
+            }
 
             if (gamepad2.right_trigger > 0.5) {
                 ALL();
